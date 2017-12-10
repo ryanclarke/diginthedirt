@@ -26,7 +26,7 @@ headerView =
       , span [] [ text " by " ]
       , a [ href "https://www.ryanclarke.net" ] [ text "Ryan Clarke" ]
       , span [] [ text ". (" ]
-      , a [ href "https://gitlab.com/ryanclarke/diginthedirt" ] [ text "source" ]
+      , a [ href "https://github.com/ryanclarke/diginthedirt" ] [ text "source" ]
       , span [] [ text ")" ]
       ]
     ]
