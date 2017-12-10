@@ -1,13 +1,6 @@
 module Update exposing (update)
 
 import Time exposing (Time)
-
-
--- import Array
--- import Keyboard exposing (KeyCode)
--- import Random
--- import Char
-
 import Model exposing (..)
 
 
