@@ -4,15 +4,25 @@ import Time exposing (Time)
 
 type Msg 
   = Tick Time
-   | Action Action
+   | Act Act
 
-type Action
-  = Dig
+type Act
+  = None
+  | Dig
   | Dream
+
+type alias Action =
+  { act : Act
+  , name : String
+  , progress : Maybe Float
+  , duration : Float
+  }
 
 type alias Model =
   { text : String 
   , tries : Int
+  , tickDuration : Float
+  , lastTickDuration : Float
+  , lastTimestamp : Time
+  , actions : List Action
   }
-
-

@@ -22,6 +22,21 @@ init =
     model = 
       { text = "For my girls"
       , tries = 0
+      , tickDuration = 20
+      , lastTickDuration = 0
+      , lastTimestamp = 0
+      , actions =
+        [ { act = Dig
+          , name = "Dig"
+          , progress = Nothing
+          , duration = 2000
+          }
+        , { act = Dream
+          , name = "Dream"
+          , progress = Nothing
+          , duration = 5000
+          }
+        ]
       }
   in
     (model, Cmd.none)
@@ -30,7 +45,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   let
     delay =
-      1000
+      model.tickDuration
   in
     Sub.batch
       [ every (delay * millisecond) Tick
