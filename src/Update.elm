@@ -1,9 +1,9 @@
 module Update exposing (update)
 
-import Array
-import Keyboard exposing (KeyCode)
-import Random
-import Char
+-- import Array
+-- import Keyboard exposing (KeyCode)
+-- import Random
+-- import Char
 
 import Model exposing (..)
 

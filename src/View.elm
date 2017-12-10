@@ -3,11 +3,11 @@ module View exposing (view)
 import Html exposing (..)
 import Html.Events exposing (on, onClick)
 import Html.Attributes exposing (..)
-import Svg exposing (Svg, svg, rect, g)
+-- import Svg exposing (Svg, svg, rect, g)
 -- import Svg.Attributes exposing (..)
+-- import Json.Decode as Decode
 
 import Model exposing (..)
-import Json.Decode as Decode
 
 view : Model -> Html Msg
 view model =
