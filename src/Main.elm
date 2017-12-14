@@ -21,9 +21,7 @@ init : ( Model, Cmd msg )
 init =
     let
         model =
-            { text = "For my girls"
-            , tries = 0
-            , tickDuration = 20
+            { tickDuration = 20
             , lastTickDuration = 0
             , lastTimestamp = 0
             , actions =

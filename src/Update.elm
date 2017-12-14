@@ -15,11 +15,8 @@ update msg model =
                 None ->
                     ( model, Cmd.none )
 
-                Dig ->
-                    dig model
-
-                Dream ->
-                    dig model
+                _ ->
+                    startAct model act
 
 
 gameTick : Model -> Time -> ( Model, Cmd Msg )
@@ -56,31 +53,21 @@ gameTick model time =
         )
 
 
-dig : Model -> ( Model, Cmd Msg )
-dig model =
+startAct : Model -> Act -> ( Model, Cmd Msg )
+startAct model act =
     let
-        tries =
-            model.tries + 1
-
-        text =
-            toString tries
+        initialize action =
+            if action.act == act then
+                { action | progress = Just 100 }
+            else
+                action
 
         actions =
             model.actions
-                |> List.map
-                    (\x ->
-                        case x.act of
-                            Dig ->
-                                { x | progress = Just 100 }
-
-                            _ ->
-                                x
-                    )
+                |> List.map initialize
     in
         ( { model
-            | text = text
-            , tries = tries
-            , actions = actions
+            | actions = actions
           }
         , Cmd.none
         )

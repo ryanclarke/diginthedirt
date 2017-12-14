@@ -23,9 +23,7 @@ type alias Action =
 
 
 type alias Model =
-    { text : String
-    , tries : Int
-    , tickDuration : Float
+    { tickDuration : Float
     , lastTickDuration : Float
     , lastTimestamp : Time
     , actions : List Action
