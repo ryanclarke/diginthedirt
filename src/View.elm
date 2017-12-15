@@ -9,16 +9,26 @@ import Model exposing (..)
 view : Model -> Html Msg
 view model =
     let
+        css =
+            Html.node "link"
+                [ Html.Attributes.rel "stylesheet"
+                , Html.Attributes.href "https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css"
+                ]
+                []
+
         wrapper =
-            (\body -> div [] [ headerView, body ])
+            (\body -> div [ class "container mx-auto    " ] [ css, headerView, body ])
     in
         wrapper (mainView model)
 
 
 headerView : Html Msg
 headerView =
-    header []
-        [ h1 [] [ text "Dig in the Dirt" ]
+    header
+        [ class "bg-green-dark p-4 text-justify w-full" ]
+        [ h1
+            [ class "text-white inline pr-4" ]
+            [ text "Dig in the Dirt" ]
         , em []
             [ span [] [ text "a simple game written in " ]
             , a [ href "http://elm-lang.org/" ] [ text "elm" ]
@@ -33,13 +43,24 @@ headerView =
 
 mainView : Model -> Html Msg
 mainView model =
-    div [ class "container" ]
-        [ p []
-            [ span [] [ text "You found: " ]
-            , span [] [ text model.text ]
-            ]
-        , div [] (List.map btn model.actions)
+    div [ class "text-center flex -m-2" ]
+        [ panel "Actions"
+            (div [] (List.map btn model.actions))
+        , panel "Inventory"
+            (p [] [ text "Stuff" ])
         ]
+
+
+panel : String -> Html Msg -> Html Msg
+panel title html =
+    div [ class "w-1/2 inline m-2 mt-6" ]
+        [ h2
+            [ class "bg-green-light rounded-t-lg border-solid border-2 border-green-dark border-b-0 p-1" ]
+            [ text title ]
+        , div
+            [ class "border-solid border-2 border-green-dark border-t-0" ]
+            [ html ]
+        ] 
 
 
 btn : Action -> Html Msg
@@ -64,15 +85,12 @@ btn action =
         button
             [ onClick isDisabled.action
             , type_ "button"
+            , class "rounded-full p-2 m-2 w-32 border-solid border border-black"
             , style
-                [ ( "background-color", "lightgray" )
-                , ( "background-image", "linear-gradient(darkgray 0, darkgray 100%)" )
+                [ ( "background-color", "transparent" )
+                , ( "background-image", "linear-gradient(lightgray 0, lightgray 100%)" )
                 , ( "background-repeat", "no-repeat" )
                 , ( "background-size", pct ++ "% 100%" )
-                , ( "border-color", "gray" )
-                , ( "border-style", "solid" )
-                , ( "width", "200px" )
-                , ( "height", "40px" )
                 , ( "cursor", isDisabled.cursor )
                 ]
             ]
