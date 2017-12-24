@@ -1,3 +1,4 @@
 {
-    "elm.formatOnSave": true
+    "elm.formatOnSave": true,
+    "elm.makeSpecialFile": "scr/Main.elm"
 }

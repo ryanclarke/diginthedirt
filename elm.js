@@ -8690,6 +8690,69 @@ var _ryanclarke$diginthedirt$Model$Dream = {ctor: 'Dream'};
 var _ryanclarke$diginthedirt$Model$Dig = {ctor: 'Dig'};
 var _ryanclarke$diginthedirt$Model$None = {ctor: 'None'};
 
+var _ryanclarke$diginthedirt$Update$startAct = F2(
+	function (model, act) {
+		var initialize = function (action) {
+			return _elm_lang$core$Native_Utils.eq(action.act, act) ? _elm_lang$core$Native_Utils.update(
+				action,
+				{
+					progress: _elm_lang$core$Maybe$Just(100)
+				}) : action;
+		};
+		var actions = A2(_elm_lang$core$List$map, initialize, model.actions);
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{actions: actions}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	});
+var _ryanclarke$diginthedirt$Update$gameTick = F2(
+	function (model, time) {
+		var sinceLastTick = time - model.lastTimestamp;
+		var actions = A2(
+			_elm_lang$core$List$map,
+			function (x) {
+				var _p0 = x.progress;
+				if (_p0.ctor === 'Just') {
+					var pct = _p0._0 - ((sinceLastTick / x.duration) * 100);
+					return (_elm_lang$core$Native_Utils.cmp(pct, 0) < 0) ? _elm_lang$core$Native_Utils.update(
+						x,
+						{progress: _elm_lang$core$Maybe$Nothing}) : _elm_lang$core$Native_Utils.update(
+						x,
+						{
+							progress: _elm_lang$core$Maybe$Just(pct)
+						});
+				} else {
+					return x;
+				}
+			},
+			model.actions);
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{lastTimestamp: time, lastTickDuration: sinceLastTick, actions: actions}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	});
+var _ryanclarke$diginthedirt$Update$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		if (_p1.ctor === 'Tick') {
+			return A2(_ryanclarke$diginthedirt$Update$gameTick, model, _p1._0);
+		} else {
+			var _p3 = _p1._0;
+			var _p2 = _p3;
+			if (_p2.ctor === 'None') {
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			} else {
+				return A2(_ryanclarke$diginthedirt$Update$startAct, model, _p3);
+			}
+		}
+	});
+
 var _ryanclarke$diginthedirt$View$btn = function (action) {
 	var isDisabled = function () {
 		var _p0 = action.progress;
@@ -8991,10 +9054,39 @@ var _ryanclarke$diginthedirt$View$view = function (model) {
 		_ryanclarke$diginthedirt$View$mainView(model));
 };
 
+var _ryanclarke$diginthedirt$Main$subscriptions = function (model) {
+	var delay = model.tickDuration;
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$core$Time$every, delay * _elm_lang$core$Time$millisecond, _ryanclarke$diginthedirt$Model$Tick),
+			_1: {ctor: '[]'}
+		});
+};
+var _ryanclarke$diginthedirt$Main$init = function () {
+	var model = {
+		tickDuration: 20,
+		lastTickDuration: 0,
+		lastTimestamp: 0,
+		actions: {
+			ctor: '::',
+			_0: {act: _ryanclarke$diginthedirt$Model$Dig, name: 'Dig', progress: _elm_lang$core$Maybe$Nothing, duration: 2000},
+			_1: {
+				ctor: '::',
+				_0: {act: _ryanclarke$diginthedirt$Model$Dream, name: 'Dream', progress: _elm_lang$core$Maybe$Nothing, duration: 5000},
+				_1: {ctor: '[]'}
+			}
+		}
+	};
+	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+}();
+var _ryanclarke$diginthedirt$Main$main = _elm_lang$html$Html$program(
+	{init: _ryanclarke$diginthedirt$Main$init, update: _ryanclarke$diginthedirt$Update$update, subscriptions: _ryanclarke$diginthedirt$Main$subscriptions, view: _ryanclarke$diginthedirt$View$view})();
+
 var Elm = {};
-Elm['View'] = Elm['View'] || {};
-if (typeof _ryanclarke$diginthedirt$View$main !== 'undefined') {
-    _ryanclarke$diginthedirt$View$main(Elm['View'], 'View', undefined);
+Elm['Main'] = Elm['Main'] || {};
+if (typeof _ryanclarke$diginthedirt$Main$main !== 'undefined') {
+    _ryanclarke$diginthedirt$Main$main(Elm['Main'], 'Main', undefined);
 }
 
 if (typeof define === "function" && define['amd'])
