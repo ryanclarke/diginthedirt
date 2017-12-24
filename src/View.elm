@@ -71,7 +71,7 @@ btn action =
                 At n ->
                     ( n |> toString
                     , { cursor = "progress"
-                      , action = Act Idle
+                      , action = Act Noop
                       }
                     )
 

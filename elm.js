@@ -8688,7 +8688,7 @@ var _ryanclarke$diginthedirt$Model$Tick = function (a) {
 };
 var _ryanclarke$diginthedirt$Model$Dream = {ctor: 'Dream'};
 var _ryanclarke$diginthedirt$Model$Dig = {ctor: 'Dig'};
-var _ryanclarke$diginthedirt$Model$Idle = {ctor: 'Idle'};
+var _ryanclarke$diginthedirt$Model$Noop = {ctor: 'Noop'};
 var _ryanclarke$diginthedirt$Model$Finished = {ctor: 'Finished'};
 var _ryanclarke$diginthedirt$Model$At = function (a) {
 	return {ctor: 'At', _0: a};
@@ -8715,13 +8715,18 @@ var _ryanclarke$diginthedirt$Update$startAct = F2(
 				}) : action;
 		};
 		var actions = A2(_elm_lang$core$List$map, initialize, model.actions);
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{actions: actions}),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
+		var _p0 = act;
+		if (_p0.ctor === 'Noop') {
+			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{actions: actions}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		}
 	});
 var _ryanclarke$diginthedirt$Update$gameTick = F2(
 	function (model, time) {
@@ -8747,12 +8752,12 @@ var _ryanclarke$diginthedirt$Update$gameTick = F2(
 		var actions = A2(
 			_elm_lang$core$List$map,
 			function (x) {
-				var _p0 = x.progress;
-				switch (_p0.ctor) {
+				var _p1 = x.progress;
+				switch (_p1.ctor) {
 					case 'Inactive':
 						return x;
 					case 'At':
-						var pct = _p0._0 - ((sinceLastTick / x.duration) * 100);
+						var pct = _p1._0 - ((sinceLastTick / x.duration) * 100);
 						return (_elm_lang$core$Native_Utils.cmp(pct, 0) < 0) ? _elm_lang$core$Native_Utils.update(
 							x,
 							{progress: _ryanclarke$diginthedirt$Model$Finished}) : _elm_lang$core$Native_Utils.update(
@@ -8777,17 +8782,11 @@ var _ryanclarke$diginthedirt$Update$gameTick = F2(
 	});
 var _ryanclarke$diginthedirt$Update$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		if (_p1.ctor === 'Tick') {
-			return A2(_ryanclarke$diginthedirt$Update$gameTick, model, _p1._0);
+		var _p2 = msg;
+		if (_p2.ctor === 'Tick') {
+			return A2(_ryanclarke$diginthedirt$Update$gameTick, model, _p2._0);
 		} else {
-			var _p3 = _p1._0;
-			var _p2 = _p3;
-			if (_p2.ctor === 'Idle') {
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			} else {
-				return A2(_ryanclarke$diginthedirt$Update$startAct, model, _p3);
-			}
+			return A2(_ryanclarke$diginthedirt$Update$startAct, model, _p2._0);
 		}
 	});
 
@@ -8800,7 +8799,7 @@ var _ryanclarke$diginthedirt$View$btn = function (action) {
 				_0: _elm_lang$core$Basics$toString(_p1._0),
 				_1: {
 					cursor: 'progress',
-					action: _ryanclarke$diginthedirt$Model$Act(_ryanclarke$diginthedirt$Model$Idle)
+					action: _ryanclarke$diginthedirt$Model$Act(_ryanclarke$diginthedirt$Model$Noop)
 				}
 			};
 		} else {

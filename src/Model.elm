@@ -9,7 +9,7 @@ type Msg
 
 
 type Act
-    = Idle
+    = Noop
     | Dig
     | Dream
 

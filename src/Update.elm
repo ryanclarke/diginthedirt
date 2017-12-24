@@ -11,12 +11,7 @@ update msg model =
             gameTick model time
 
         Act act ->
-            case act of
-                Idle ->
-                    ( model, Cmd.none )
-
-                _ ->
-                    startAct model act
+            startAct model act
 
 
 gameTick : Model -> Time -> ( Model, Cmd Msg )
@@ -80,8 +75,13 @@ startAct model act =
             model.actions
                 |> List.map initialize
     in
-        ( { model
-            | actions = actions
-          }
-        , Cmd.none
-        )
+        case act of
+            Noop ->
+                ( model, Cmd.none )
+
+            _ ->
+                ( { model
+                    | actions = actions
+                }
+                , Cmd.none
+                )
