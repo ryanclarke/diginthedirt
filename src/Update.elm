@@ -12,7 +12,7 @@ update msg model =
 
         Act act ->
             case act of
-                None ->
+                Idle ->
                     ( model, Cmd.none )
 
                 _ ->
@@ -25,29 +25,43 @@ gameTick model time =
         sinceLastTick =
             time - model.lastTimestamp
 
+        output =
+            model.actions
+                |> List.filter
+                    (\x -> x.progress == Finished )
+                |> List.map
+                    (\x -> x.name )
+                |> List.foldr
+                    (::)
+                    model.output
+
         actions =
             model.actions
                 |> List.map
                     (\x ->
                         case x.progress of
-                            Just i ->
+                            Inactive ->
+                                x
+
+                            At n ->
                                 let
                                     pct =
-                                        i - (sinceLastTick / x.duration * 100)
+                                        n - (sinceLastTick / x.duration * 100)
                                 in
                                     if pct < 0 then
-                                        { x | progress = Nothing }
+                                        { x | progress = Finished }
                                     else
-                                        { x | progress = Just pct }
+                                        { x | progress = At pct }
 
-                            Nothing ->
-                                x
+                            Finished ->
+                                { x | progress = Inactive }
                     )
     in
         ( { model
             | lastTimestamp = time
             , lastTickDuration = sinceLastTick
             , actions = actions
+            , output = output
           }
         , Cmd.none
         )
@@ -58,7 +72,7 @@ startAct model act =
     let
         initialize action =
             if action.act == act then
-                { action | progress = Just 100 }
+                { action | progress = At 100 }
             else
                 action
 

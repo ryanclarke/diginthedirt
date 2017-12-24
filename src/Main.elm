@@ -27,15 +27,16 @@ init =
             , actions =
                 [ { act = Dig
                   , name = "Dig"
-                  , progress = Nothing
+                  , progress = Inactive
                   , duration = 2000
                   }
                 , { act = Dream
                   , name = "Dream"
-                  , progress = Nothing
+                  , progress = Inactive
                   , duration = 5000
                   }
                 ]
+            , output = ["Nothing"]
             }
     in
         ( model, Cmd.none )

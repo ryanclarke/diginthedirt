@@ -9,15 +9,21 @@ type Msg
 
 
 type Act
-    = None
+    = Idle
     | Dig
     | Dream
+
+
+type Progress
+    = Inactive
+    | At Float
+    | Finished
 
 
 type alias Action =
     { act : Act
     , name : String
-    , progress : Maybe Float
+    , progress : Progress
     , duration : Float
     }
 
@@ -27,4 +33,5 @@ type alias Model =
     , lastTickDuration : Float
     , lastTimestamp : Time
     , actions : List Action
+    , output : List String
     }

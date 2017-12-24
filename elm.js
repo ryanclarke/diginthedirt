@@ -8676,9 +8676,9 @@ var _ryanclarke$diginthedirt$Model$Action = F4(
 	function (a, b, c, d) {
 		return {act: a, name: b, progress: c, duration: d};
 	});
-var _ryanclarke$diginthedirt$Model$Model = F4(
-	function (a, b, c, d) {
-		return {tickDuration: a, lastTickDuration: b, lastTimestamp: c, actions: d};
+var _ryanclarke$diginthedirt$Model$Model = F5(
+	function (a, b, c, d, e) {
+		return {tickDuration: a, lastTickDuration: b, lastTimestamp: c, actions: d, output: e};
 	});
 var _ryanclarke$diginthedirt$Model$Act = function (a) {
 	return {ctor: 'Act', _0: a};
@@ -8688,7 +8688,12 @@ var _ryanclarke$diginthedirt$Model$Tick = function (a) {
 };
 var _ryanclarke$diginthedirt$Model$Dream = {ctor: 'Dream'};
 var _ryanclarke$diginthedirt$Model$Dig = {ctor: 'Dig'};
-var _ryanclarke$diginthedirt$Model$None = {ctor: 'None'};
+var _ryanclarke$diginthedirt$Model$Idle = {ctor: 'Idle'};
+var _ryanclarke$diginthedirt$Model$Finished = {ctor: 'Finished'};
+var _ryanclarke$diginthedirt$Model$At = function (a) {
+	return {ctor: 'At', _0: a};
+};
+var _ryanclarke$diginthedirt$Model$Inactive = {ctor: 'Inactive'};
 
 var _ryanclarke$diginthedirt$Update$startAct = F2(
 	function (model, act) {
@@ -8696,7 +8701,7 @@ var _ryanclarke$diginthedirt$Update$startAct = F2(
 			return _elm_lang$core$Native_Utils.eq(action.act, act) ? _elm_lang$core$Native_Utils.update(
 				action,
 				{
-					progress: _elm_lang$core$Maybe$Just(100)
+					progress: _ryanclarke$diginthedirt$Model$At(100)
 				}) : action;
 		};
 		var actions = A2(_elm_lang$core$List$map, initialize, model.actions);
@@ -8710,22 +8715,45 @@ var _ryanclarke$diginthedirt$Update$startAct = F2(
 	});
 var _ryanclarke$diginthedirt$Update$gameTick = F2(
 	function (model, time) {
+		var output = A3(
+			_elm_lang$core$List$foldr,
+			F2(
+				function (x, y) {
+					return {ctor: '::', _0: x, _1: y};
+				}),
+			model.output,
+			A2(
+				_elm_lang$core$List$map,
+				function (x) {
+					return x.name;
+				},
+				A2(
+					_elm_lang$core$List$filter,
+					function (x) {
+						return _elm_lang$core$Native_Utils.eq(x.progress, _ryanclarke$diginthedirt$Model$Finished);
+					},
+					model.actions)));
 		var sinceLastTick = time - model.lastTimestamp;
 		var actions = A2(
 			_elm_lang$core$List$map,
 			function (x) {
 				var _p0 = x.progress;
-				if (_p0.ctor === 'Just') {
-					var pct = _p0._0 - ((sinceLastTick / x.duration) * 100);
-					return (_elm_lang$core$Native_Utils.cmp(pct, 0) < 0) ? _elm_lang$core$Native_Utils.update(
-						x,
-						{progress: _elm_lang$core$Maybe$Nothing}) : _elm_lang$core$Native_Utils.update(
-						x,
-						{
-							progress: _elm_lang$core$Maybe$Just(pct)
-						});
-				} else {
-					return x;
+				switch (_p0.ctor) {
+					case 'Inactive':
+						return x;
+					case 'At':
+						var pct = _p0._0 - ((sinceLastTick / x.duration) * 100);
+						return (_elm_lang$core$Native_Utils.cmp(pct, 0) < 0) ? _elm_lang$core$Native_Utils.update(
+							x,
+							{progress: _ryanclarke$diginthedirt$Model$Finished}) : _elm_lang$core$Native_Utils.update(
+							x,
+							{
+								progress: _ryanclarke$diginthedirt$Model$At(pct)
+							});
+					default:
+						return _elm_lang$core$Native_Utils.update(
+							x,
+							{progress: _ryanclarke$diginthedirt$Model$Inactive});
 				}
 			},
 			model.actions);
@@ -8733,7 +8761,7 @@ var _ryanclarke$diginthedirt$Update$gameTick = F2(
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
 				model,
-				{lastTimestamp: time, lastTickDuration: sinceLastTick, actions: actions}),
+				{lastTimestamp: time, lastTickDuration: sinceLastTick, actions: actions, output: output}),
 			_1: _elm_lang$core$Platform_Cmd$none
 		};
 	});
@@ -8745,7 +8773,7 @@ var _ryanclarke$diginthedirt$Update$update = F2(
 		} else {
 			var _p3 = _p1._0;
 			var _p2 = _p3;
-			if (_p2.ctor === 'None') {
+			if (_p2.ctor === 'Idle') {
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			} else {
 				return A2(_ryanclarke$diginthedirt$Update$startAct, model, _p3);
@@ -8754,22 +8782,30 @@ var _ryanclarke$diginthedirt$Update$update = F2(
 	});
 
 var _ryanclarke$diginthedirt$View$btn = function (action) {
-	var isDisabled = function () {
-		var _p0 = action.progress;
-		if (_p0.ctor === 'Just') {
+	var _p0 = function () {
+		var _p1 = action.progress;
+		if (_p1.ctor === 'At') {
 			return {
-				cursor: 'progress',
-				action: _ryanclarke$diginthedirt$Model$Act(_ryanclarke$diginthedirt$Model$None)
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Basics$toString(_p1._0),
+				_1: {
+					cursor: 'progress',
+					action: _ryanclarke$diginthedirt$Model$Act(_ryanclarke$diginthedirt$Model$Idle)
+				}
 			};
 		} else {
 			return {
-				cursor: 'default',
-				action: _ryanclarke$diginthedirt$Model$Act(action.act)
+				ctor: '_Tuple2',
+				_0: '0',
+				_1: {
+					cursor: 'default',
+					action: _ryanclarke$diginthedirt$Model$Act(action.act)
+				}
 			};
 		}
 	}();
-	var pct = _elm_lang$core$Basics$toString(
-		A2(_elm_lang$core$Maybe$withDefault, 0, action.progress));
+	var pct = _p0._0;
+	var isDisabled = _p0._1;
 	return A2(
 		_elm_lang$html$Html$button,
 		{
@@ -8884,13 +8920,21 @@ var _ryanclarke$diginthedirt$View$mainView = function (model) {
 					_ryanclarke$diginthedirt$View$panel,
 					'Inventory',
 					A2(
-						_elm_lang$html$Html$p,
+						_elm_lang$html$Html$div,
 						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Stuff'),
-							_1: {ctor: '[]'}
-						})),
+						A2(
+							_elm_lang$core$List$map,
+							function (x) {
+								return A2(
+									_elm_lang$html$Html$p,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(x),
+										_1: {ctor: '[]'}
+									});
+							},
+							model.output))),
 				_1: {ctor: '[]'}
 			}
 		});
@@ -9070,12 +9114,17 @@ var _ryanclarke$diginthedirt$Main$init = function () {
 		lastTimestamp: 0,
 		actions: {
 			ctor: '::',
-			_0: {act: _ryanclarke$diginthedirt$Model$Dig, name: 'Dig', progress: _elm_lang$core$Maybe$Nothing, duration: 2000},
+			_0: {act: _ryanclarke$diginthedirt$Model$Dig, name: 'Dig', progress: _ryanclarke$diginthedirt$Model$Inactive, duration: 2000},
 			_1: {
 				ctor: '::',
-				_0: {act: _ryanclarke$diginthedirt$Model$Dream, name: 'Dream', progress: _elm_lang$core$Maybe$Nothing, duration: 5000},
+				_0: {act: _ryanclarke$diginthedirt$Model$Dream, name: 'Dream', progress: _ryanclarke$diginthedirt$Model$Inactive, duration: 5000},
 				_1: {ctor: '[]'}
 			}
+		},
+		output: {
+			ctor: '::',
+			_0: 'Nothing',
+			_1: {ctor: '[]'}
 		}
 	};
 	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};

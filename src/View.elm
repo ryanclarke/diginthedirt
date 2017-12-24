@@ -47,7 +47,7 @@ mainView model =
         [ panel "Actions"
             (div [] (List.map btn model.actions))
         , panel "Inventory"
-            (p [] [ text "Stuff" ])
+            (div [] (List.map (\x -> p [] [ text x ]) model.output ))
         ]
 
 
@@ -60,27 +60,27 @@ panel title html =
         , div
             [ class "border-solid border-2 border-green-dark border-t-0" ]
             [ html ]
-        ] 
+        ]
 
 
 btn : Action -> Html Msg
 btn action =
     let
-        pct =
-            Maybe.withDefault 0 action.progress
-                |> toString
-
-        isDisabled =
+        ( pct, isDisabled ) =
             case action.progress of
-                Just _ ->
-                    { cursor = "progress"
-                    , action = Act None
-                    }
+                At n ->
+                    ( n |> toString
+                    , { cursor = "progress"
+                      , action = Act Idle
+                      }
+                    )
 
-                Nothing ->
-                    { cursor = "default"
-                    , action = Act action.act
-                    }
+                _ ->
+                    ( "0"
+                    , { cursor = "default"
+                      , action = Act action.act
+                      }
+                    )
     in
         button
             [ onClick isDisabled.action
