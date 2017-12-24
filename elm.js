@@ -8695,6 +8695,16 @@ var _ryanclarke$diginthedirt$Model$At = function (a) {
 };
 var _ryanclarke$diginthedirt$Model$Inactive = {ctor: 'Inactive'};
 
+var _ryanclarke$diginthedirt$Actions$all = {
+	ctor: '::',
+	_0: {act: _ryanclarke$diginthedirt$Model$Dig, name: 'Dig', progress: _ryanclarke$diginthedirt$Model$Inactive, duration: 2000},
+	_1: {
+		ctor: '::',
+		_0: {act: _ryanclarke$diginthedirt$Model$Dream, name: 'Dream', progress: _ryanclarke$diginthedirt$Model$Inactive, duration: 5000},
+		_1: {ctor: '[]'}
+	}
+};
+
 var _ryanclarke$diginthedirt$Update$startAct = F2(
 	function (model, act) {
 		var initialize = function (action) {
@@ -9112,15 +9122,7 @@ var _ryanclarke$diginthedirt$Main$init = function () {
 		tickDuration: 20,
 		lastTickDuration: 0,
 		lastTimestamp: 0,
-		actions: {
-			ctor: '::',
-			_0: {act: _ryanclarke$diginthedirt$Model$Dig, name: 'Dig', progress: _ryanclarke$diginthedirt$Model$Inactive, duration: 2000},
-			_1: {
-				ctor: '::',
-				_0: {act: _ryanclarke$diginthedirt$Model$Dream, name: 'Dream', progress: _ryanclarke$diginthedirt$Model$Inactive, duration: 5000},
-				_1: {ctor: '[]'}
-			}
-		},
+		actions: _ryanclarke$diginthedirt$Actions$all,
 		output: {
 			ctor: '::',
 			_0: 'Nothing',

@@ -1,15 +1,16 @@
 module Main exposing (main)
 
-import Html exposing (program)
+import Html
 import Time exposing (every, millisecond)
-import Model exposing (..)
+import Actions
+import Model exposing (Model, Msg(Tick))
 import Update exposing (update)
 import View exposing (view)
 
 
 main : Program Never Model Msg
 main =
-    program
+    Html.program
         { init = init
         , update = update
         , subscriptions = subscriptions
@@ -24,18 +25,7 @@ init =
             { tickDuration = 20
             , lastTickDuration = 0
             , lastTimestamp = 0
-            , actions =
-                [ { act = Dig
-                  , name = "Dig"
-                  , progress = Inactive
-                  , duration = 2000
-                  }
-                , { act = Dream
-                  , name = "Dream"
-                  , progress = Inactive
-                  , duration = 5000
-                  }
-                ]
+            , actions = Actions.all
             , output = ["Nothing"]
             }
     in
