@@ -8676,10 +8676,23 @@ var _ryanclarke$diginthedirt$Model$Action = F4(
 	function (a, b, c, d) {
 		return {act: a, name: b, progress: c, duration: d};
 	});
-var _ryanclarke$diginthedirt$Model$Model = F5(
-	function (a, b, c, d, e) {
-		return {tickDuration: a, lastTickDuration: b, lastTimestamp: c, actions: d, output: e};
+var _ryanclarke$diginthedirt$Model$Item = F2(
+	function (a, b) {
+		return {name: a, chance: b};
 	});
+var _ryanclarke$diginthedirt$Model$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {tickDuration: a, lastTickDuration: b, lastTimestamp: c, actions: d, items: e, output: f, inventory: g};
+	});
+var _ryanclarke$diginthedirt$Model$Recieve = function (a) {
+	return {ctor: 'Recieve', _0: a};
+};
+var _ryanclarke$diginthedirt$Model$Chance = function (a) {
+	return {ctor: 'Chance', _0: a};
+};
+var _ryanclarke$diginthedirt$Model$Completed = function (a) {
+	return {ctor: 'Completed', _0: a};
+};
 var _ryanclarke$diginthedirt$Model$Act = function (a) {
 	return {ctor: 'Act', _0: a};
 };
@@ -8730,6 +8743,30 @@ var _ryanclarke$diginthedirt$Update$startAct = F2(
 	});
 var _ryanclarke$diginthedirt$Update$gameTick = F2(
 	function (model, time) {
+		var tweakI = F2(
+			function (action, model) {
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						inventory: A2(_elm_lang$core$List$append, model.inventory, model.items)
+					});
+			});
+		var inventory = A3(
+			_elm_lang$core$List$foldr,
+			tweakI,
+			model,
+			A2(
+				_elm_lang$core$List$filter,
+				function (x) {
+					return _elm_lang$core$Native_Utils.eq(x.progress, _ryanclarke$diginthedirt$Model$Finished);
+				},
+				model.actions)).inventory;
+		var finishedActions = A2(
+			_elm_lang$core$List$filter,
+			function (x) {
+				return _elm_lang$core$Native_Utils.eq(x.progress, _ryanclarke$diginthedirt$Model$Finished);
+			},
+			model.actions);
 		var output = A3(
 			_elm_lang$core$List$foldr,
 			F2(
@@ -8742,12 +8779,14 @@ var _ryanclarke$diginthedirt$Update$gameTick = F2(
 				function (x) {
 					return x.name;
 				},
-				A2(
-					_elm_lang$core$List$filter,
-					function (x) {
-						return _elm_lang$core$Native_Utils.eq(x.progress, _ryanclarke$diginthedirt$Model$Finished);
-					},
-					model.actions)));
+				finishedActions));
+		var totalChance = _elm_lang$core$List$sum(
+			A2(
+				_elm_lang$core$List$map,
+				function (y) {
+					return y.chance;
+				},
+				model.items));
 		var sinceLastTick = time - model.lastTimestamp;
 		var actions = A2(
 			_elm_lang$core$List$map,
@@ -8776,17 +8815,20 @@ var _ryanclarke$diginthedirt$Update$gameTick = F2(
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
 				model,
-				{lastTimestamp: time, lastTickDuration: sinceLastTick, actions: actions, output: output}),
+				{lastTimestamp: time, lastTickDuration: sinceLastTick, actions: actions, output: output, inventory: inventory}),
 			_1: _elm_lang$core$Platform_Cmd$none
 		};
 	});
 var _ryanclarke$diginthedirt$Update$update = F2(
 	function (msg, model) {
 		var _p2 = msg;
-		if (_p2.ctor === 'Tick') {
-			return A2(_ryanclarke$diginthedirt$Update$gameTick, model, _p2._0);
-		} else {
-			return A2(_ryanclarke$diginthedirt$Update$startAct, model, _p2._0);
+		switch (_p2.ctor) {
+			case 'Tick':
+				return A2(_ryanclarke$diginthedirt$Update$gameTick, model, _p2._0);
+			case 'Act':
+				return A2(_ryanclarke$diginthedirt$Update$startAct, model, _p2._0);
+			default:
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
 
@@ -8927,7 +8969,7 @@ var _ryanclarke$diginthedirt$View$mainView = function (model) {
 				ctor: '::',
 				_0: A2(
 					_ryanclarke$diginthedirt$View$panel,
-					'Inventory',
+					'Action Log',
 					A2(
 						_elm_lang$html$Html$div,
 						{ctor: '[]'},
@@ -8944,7 +8986,29 @@ var _ryanclarke$diginthedirt$View$mainView = function (model) {
 									});
 							},
 							model.output))),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_ryanclarke$diginthedirt$View$panel,
+						'Inventory',
+						A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							A2(
+								_elm_lang$core$List$map,
+								function (x) {
+									return A2(
+										_elm_lang$html$Html$p,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(x.name),
+											_1: {ctor: '[]'}
+										});
+								},
+								model.inventory))),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
@@ -9122,11 +9186,21 @@ var _ryanclarke$diginthedirt$Main$init = function () {
 		lastTickDuration: 0,
 		lastTimestamp: 0,
 		actions: _ryanclarke$diginthedirt$Actions$all,
+		items: {
+			ctor: '::',
+			_0: {name: 'dirt', chance: 10},
+			_1: {
+				ctor: '::',
+				_0: {name: 'brick', chance: 5},
+				_1: {ctor: '[]'}
+			}
+		},
 		output: {
 			ctor: '::',
 			_0: 'Nothing',
 			_1: {ctor: '[]'}
-		}
+		},
+		inventory: {ctor: '[]'}
 	};
 	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 }();

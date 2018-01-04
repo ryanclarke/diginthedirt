@@ -46,8 +46,10 @@ mainView model =
     div [ class "text-center flex -m-2" ]
         [ panel "Actions"
             (div [] (List.map btn model.actions))
-        , panel "Inventory"
+        , panel "Action Log"
             (div [] (List.map (\x -> p [] [ text x ]) model.output ))
+        , panel "Inventory"
+            (div [] (List.map (\x -> p [] [ text x.name ]) model.inventory ))
         ]
 
 

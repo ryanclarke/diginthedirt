@@ -26,7 +26,16 @@ init =
             , lastTickDuration = 0
             , lastTimestamp = 0
             , actions = Actions.all
+            , items =
+                [ { name = "dirt"
+                  , chance = 10
+                  }
+                , { name = "brick"
+                  , chance = 5
+                  }
+                ]
             , output = ["Nothing"]
+            , inventory = []
             }
     in
         ( model, Cmd.none )

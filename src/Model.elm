@@ -6,6 +6,9 @@ import Time exposing (Time)
 type Msg
     = Tick Time
     | Act Act
+    | Completed (List Action)
+    | Chance Float
+    | Recieve Item
 
 
 type Act
@@ -28,10 +31,18 @@ type alias Action =
     }
 
 
+type alias Item =
+    { name : String
+    , chance : Float
+    }
+
+
 type alias Model =
     { tickDuration : Float
     , lastTickDuration : Float
     , lastTimestamp : Time
     , actions : List Action
+    , items : List Item
     , output : List String
+    , inventory : List Item
     }

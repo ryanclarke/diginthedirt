@@ -12,6 +12,9 @@ update msg model =
 
         Act act ->
             startAct model act
+        
+        _ ->
+            (model, Cmd.none)
 
 
 gameTick : Model -> Time -> ( Model, Cmd Msg )
@@ -20,43 +23,80 @@ gameTick model time =
         sinceLastTick =
             time - model.lastTimestamp
 
-        output =
+        totalChance =
+            model.items
+            |> List.map
+                (\y -> y.chance)
+            |> List.sum
+
+        finishedActions =
             model.actions
-                |> List.filter
-                    (\x -> x.progress == Finished )
-                |> List.map
-                    (\x -> x.name )
-                |> List.foldr
-                    (::)
-                    model.output
+            |> List.filter
+                (\x -> x.progress == Finished )
+
+        -- inventory =
+        --     finishedActions
+        --     |> List.map
+        --         (\x ->
+        --             model.items
+        --             |> List.filter
+        --             |> 
+        --         )
+        --     |> List.foldl
+        --         (::)
+        --         model.inventory
+
+        output =
+            finishedActions
+            |> List.map
+                (\x -> x.name )
+            |> List.foldr
+                (::)
+                model.output
 
         actions =
             model.actions
-                |> List.map
-                    (\x ->
-                        case x.progress of
-                            Inactive ->
-                                x
+            |> List.map
+                (\x ->
+                    case x.progress of
+                        Inactive ->
+                            x
 
-                            At n ->
-                                let
-                                    pct =
-                                        n - (sinceLastTick / x.duration * 100)
-                                in
-                                    if pct < 0 then
-                                        { x | progress = Finished }
-                                    else
-                                        { x | progress = At pct }
+                        At n ->
+                            let
+                                pct =
+                                    n - (sinceLastTick / x.duration * 100)
+                            in
+                                if pct < 0 then
+                                    { x | progress = Finished }
+                                else
+                                    { x | progress = At pct }
 
-                            Finished ->
-                                { x | progress = Inactive }
-                    )
+                        Finished ->
+                            { x | progress = Inactive }
+                )
+
+        tweakI : Action -> Model -> Model
+        tweakI action model =
+            { model
+            | inventory = (List.append model.inventory model.items)
+            }
+
+        inventory = 
+            (model.actions
+            |> List.filter
+                (\x -> x.progress == Finished )
+            |> List.foldr
+                tweakI
+                model).inventory
+            
     in
         ( { model
             | lastTimestamp = time
             , lastTickDuration = sinceLastTick
             , actions = actions
             , output = output
+            , inventory = inventory
           }
         , Cmd.none
         )
