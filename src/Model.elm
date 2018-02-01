@@ -6,9 +6,7 @@ import Time exposing (Time)
 type Msg
     = Tick Time
     | Act Act
-    | Completed (List Action)
-    | Chance Float
-    | Recieve Item
+    | Roll Float
 
 
 type Act
@@ -28,6 +26,7 @@ type alias Action =
     , name : String
     , progress : Progress
     , duration : Float
+    , items : List Item
     }
 
 
@@ -45,4 +44,5 @@ type alias Model =
     , items : List Item
     , output : List String
     , inventory : List Item
+    , finishedActions : List Action
     }

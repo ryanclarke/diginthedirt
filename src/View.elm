@@ -17,7 +17,7 @@ view model =
                 []
 
         wrapper =
-            (\body -> div [ class "container mx-auto    " ] [ css, headerView, body ])
+            (\body -> div [ class "container mx-auto" ] [ css, headerView, body ])
     in
         wrapper (mainView model)
 
@@ -47,9 +47,9 @@ mainView model =
         [ panel "Actions"
             (div [] (List.map btn model.actions))
         , panel "Action Log"
-            (div [] (List.map (\x -> p [] [ text x ]) model.output ))
+            (div [] (List.map (\x -> p [] [ text x ]) model.output))
         , panel "Inventory"
-            (div [] (List.map (\x -> p [] [ text x.name ]) model.inventory ))
+            (div [] (List.map (\x -> p [] [ text x.name ]) model.inventory))
         ]
 
 

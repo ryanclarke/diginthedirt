@@ -34,8 +34,9 @@ init =
                   , chance = 5
                   }
                 ]
-            , output = ["Nothing"]
+            , output = [ "Nothing" ]
             , inventory = []
+            , finishedActions = []
             }
     in
         ( model, Cmd.none )
