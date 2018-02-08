@@ -5,7 +5,7 @@ import Model exposing (..)
 
 all : List Action
 all =
-    [ { act = Dig
+    [ { actionType = Dig
       , name = "Dig"
       , progress = Inactive
       , duration = 2000
@@ -18,7 +18,7 @@ all =
               }
             ]
       }
-    , { act = Dream
+    , { actionType = Dream
       , name = "Dream"
       , progress = Inactive
       , duration = 5000

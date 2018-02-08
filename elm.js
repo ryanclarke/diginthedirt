@@ -9053,7 +9053,7 @@ var _elm_lang$html$Html_Events$Options = F2(
 
 var _ryanclarke$diginthedirt$Model$Action = F5(
 	function (a, b, c, d, e) {
-		return {act: a, name: b, progress: c, duration: d, items: e};
+		return {actionType: a, name: b, progress: c, duration: d, items: e};
 	});
 var _ryanclarke$diginthedirt$Model$Item = F2(
 	function (a, b) {
@@ -9066,8 +9066,8 @@ var _ryanclarke$diginthedirt$Model$Model = F8(
 var _ryanclarke$diginthedirt$Model$Roll = function (a) {
 	return {ctor: 'Roll', _0: a};
 };
-var _ryanclarke$diginthedirt$Model$Act = function (a) {
-	return {ctor: 'Act', _0: a};
+var _ryanclarke$diginthedirt$Model$StartAction = function (a) {
+	return {ctor: 'StartAction', _0: a};
 };
 var _ryanclarke$diginthedirt$Model$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
@@ -9084,7 +9084,7 @@ var _ryanclarke$diginthedirt$Model$Inactive = {ctor: 'Inactive'};
 var _ryanclarke$diginthedirt$Actions$all = {
 	ctor: '::',
 	_0: {
-		act: _ryanclarke$diginthedirt$Model$Dig,
+		actionType: _ryanclarke$diginthedirt$Model$Dig,
 		name: 'Dig',
 		progress: _ryanclarke$diginthedirt$Model$Inactive,
 		duration: 2000,
@@ -9101,7 +9101,7 @@ var _ryanclarke$diginthedirt$Actions$all = {
 	_1: {
 		ctor: '::',
 		_0: {
-			act: _ryanclarke$diginthedirt$Model$Dream,
+			actionType: _ryanclarke$diginthedirt$Model$Dream,
 			name: 'Dream',
 			progress: _ryanclarke$diginthedirt$Model$Inactive,
 			duration: 5000,
@@ -9111,41 +9111,98 @@ var _ryanclarke$diginthedirt$Actions$all = {
 	}
 };
 
-var _ryanclarke$diginthedirt$Update$startAct = F2(
-	function (model, act) {
-		var initialize = function (action) {
-			return _elm_lang$core$Native_Utils.eq(action.act, act) ? _elm_lang$core$Native_Utils.update(
-				action,
-				{
-					progress: _ryanclarke$diginthedirt$Model$At(100)
-				}) : action;
-		};
-		var actions = A2(_elm_lang$core$List$map, initialize, model.actions);
-		var _p0 = act;
-		if (_p0.ctor === 'Noop') {
-			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-		} else {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{actions: actions}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		}
+var _ryanclarke$diginthedirt$Processor$tryItemForSuccess = F2(
+	function (item, acc) {
+		var newChance = acc.chance - item.chance;
+		var newItem = (_elm_lang$core$Native_Utils.cmp(newChance, 0) < 1) ? _elm_lang$core$Maybe$Just(
+			A2(_elm_lang$core$Maybe$withDefault, item, acc.item)) : _elm_lang$core$Maybe$Nothing;
+		return {chance: newChance, item: newItem};
 	});
-var _ryanclarke$diginthedirt$Update$gameTick = F2(
+var _ryanclarke$diginthedirt$Processor$getItemFromChance = F2(
+	function (chance, items) {
+		var seed = {chance: chance, item: _elm_lang$core$Maybe$Nothing};
+		var result = A3(_elm_lang$core$List$foldl, _ryanclarke$diginthedirt$Processor$tryItemForSuccess, seed, items);
+		return (_elm_lang$core$Native_Utils.cmp(result.chance, 0) < 1) ? result.item : _elm_lang$core$Maybe$Nothing;
+	});
+var _ryanclarke$diginthedirt$Processor$finishedAction = F2(
+	function (model, f) {
+		var newFinishedActions = A2(
+			_elm_lang$core$Maybe$withDefault,
+			{ctor: '[]'},
+			_elm_lang$core$List$tail(model.finishedActions));
+		var message = _elm_lang$core$List$isEmpty(newFinishedActions) ? _elm_lang$core$Platform_Cmd$none : A2(
+			_elm_lang$core$Random$generate,
+			_ryanclarke$diginthedirt$Model$Roll,
+			A2(_elm_lang$core$Random$float, 0, 1));
+		var newInventoryItem = function () {
+			var _p0 = _elm_lang$core$List$head(model.finishedActions);
+			if (_p0.ctor === 'Nothing') {
+				return _elm_lang$core$Maybe$Just(
+					{name: 'air', chance: 0});
+			} else {
+				var _p1 = _p0._0;
+				var totalChance = _elm_lang$core$List$sum(
+					A2(
+						_elm_lang$core$List$map,
+						function (x) {
+							return x.chance;
+						},
+						_p1.items));
+				var score = totalChance * f;
+				return A2(_ryanclarke$diginthedirt$Processor$getItemFromChance, score, _p1.items);
+			}
+		}();
+		var newOutput = function () {
+			var _p2 = newInventoryItem;
+			if (_p2.ctor === 'Nothing') {
+				return model.output;
+			} else {
+				return {ctor: '::', _0: _p2._0.name, _1: model.output};
+			}
+		}();
+		var inventory = function () {
+			var _p3 = newInventoryItem;
+			if (_p3.ctor === 'Nothing') {
+				return model.inventory;
+			} else {
+				return {ctor: '::', _0: _p3._0, _1: model.inventory};
+			}
+		}();
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{inventory: inventory, finishedActions: newFinishedActions}),
+			_1: message
+		};
+	});
+var _ryanclarke$diginthedirt$Processor$finishedActions = function (model) {
+	return {
+		ctor: '_Tuple2',
+		_0: model,
+		_1: A2(
+			_elm_lang$core$Random$generate,
+			_ryanclarke$diginthedirt$Model$Roll,
+			A2(_elm_lang$core$Random$float, 0, 1))
+	};
+};
+var _ryanclarke$diginthedirt$Processor$Acc = F2(
+	function (a, b) {
+		return {chance: a, item: b};
+	});
+
+var _ryanclarke$diginthedirt$GameTick$gameTick = F2(
 	function (model, time) {
 		var sinceLastTick = time - model.lastTimestamp;
 		var actions = A2(
 			_elm_lang$core$List$map,
 			function (x) {
-				var _p1 = x.progress;
-				switch (_p1.ctor) {
+				var _p0 = x.progress;
+				switch (_p0.ctor) {
 					case 'Inactive':
 						return x;
 					case 'At':
-						var pct = _p1._0 - ((sinceLastTick / x.duration) * 100);
+						var pct = _p0._0 - ((sinceLastTick / x.duration) * 100);
 						return (_elm_lang$core$Native_Utils.cmp(pct, 0) < 0) ? _elm_lang$core$Native_Utils.update(
 							x,
 							{progress: _ryanclarke$diginthedirt$Model$Finished}) : _elm_lang$core$Native_Utils.update(
@@ -9180,10 +9237,6 @@ var _ryanclarke$diginthedirt$Update$gameTick = F2(
 				},
 				finishedActions));
 		var allFinishedActions = A2(_elm_lang$core$List$append, model.finishedActions, finishedActions);
-		var message = _elm_lang$core$List$isEmpty(allFinishedActions) ? _elm_lang$core$Platform_Cmd$none : A2(
-			_elm_lang$core$Random$generate,
-			_ryanclarke$diginthedirt$Model$Roll,
-			A2(_elm_lang$core$Random$float, 0, 1));
 		var processedActions = A2(
 			_elm_lang$core$List$map,
 			function (x) {
@@ -9192,94 +9245,41 @@ var _ryanclarke$diginthedirt$Update$gameTick = F2(
 					{progress: _ryanclarke$diginthedirt$Model$Inactive}) : x;
 			},
 			actions);
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{lastTimestamp: time, lastTickDuration: sinceLastTick, actions: processedActions, output: output, finishedActions: allFinishedActions}),
-			_1: message
+		var newModel = _elm_lang$core$Native_Utils.update(
+			model,
+			{lastTimestamp: time, lastTickDuration: sinceLastTick, actions: processedActions, output: output, finishedActions: allFinishedActions});
+		return _elm_lang$core$List$isEmpty(allFinishedActions) ? {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none} : _ryanclarke$diginthedirt$Processor$finishedActions(newModel);
+	});
+
+var _ryanclarke$diginthedirt$Update$startAction = F2(
+	function (model, actionType) {
+		var initialize = function (action) {
+			return _elm_lang$core$Native_Utils.eq(action.actionType, actionType) ? _elm_lang$core$Native_Utils.update(
+				action,
+				{
+					progress: _ryanclarke$diginthedirt$Model$At(100)
+				}) : action;
 		};
-	});
-var _ryanclarke$diginthedirt$Update$tryItemForSuccess = F2(
-	function (item, acc) {
-		var newChance = acc.chance - item.chance;
-		var newItem = (_elm_lang$core$Native_Utils.cmp(newChance, 0) < 1) ? _elm_lang$core$Maybe$Just(
-			A2(_elm_lang$core$Maybe$withDefault, item, acc.item)) : _elm_lang$core$Maybe$Nothing;
-		return {chance: newChance, item: newItem};
-	});
-var _ryanclarke$diginthedirt$Update$getItemFromChance = F2(
-	function (chance, items) {
-		var seed = {chance: chance, item: _elm_lang$core$Maybe$Nothing};
-		var result = A3(_elm_lang$core$List$foldl, _ryanclarke$diginthedirt$Update$tryItemForSuccess, seed, items);
-		return (_elm_lang$core$Native_Utils.cmp(result.chance, 0) < 1) ? result.item : _elm_lang$core$Maybe$Nothing;
-	});
-var _ryanclarke$diginthedirt$Update$roll = F2(
-	function (model, f) {
-		var newFinishedActions = A2(
-			_elm_lang$core$Maybe$withDefault,
-			{ctor: '[]'},
-			_elm_lang$core$List$tail(model.finishedActions));
-		var message = _elm_lang$core$List$isEmpty(newFinishedActions) ? _elm_lang$core$Platform_Cmd$none : A2(
-			_elm_lang$core$Random$generate,
-			_ryanclarke$diginthedirt$Model$Roll,
-			A2(_elm_lang$core$Random$float, 0, 1));
-		var newInventoryItem = function () {
-			var _p2 = _elm_lang$core$List$head(model.finishedActions);
-			if (_p2.ctor === 'Nothing') {
-				return _elm_lang$core$Maybe$Just(
-					{name: 'air', chance: 0});
-			} else {
-				var _p3 = _p2._0;
-				var totalChance = _elm_lang$core$List$sum(
-					A2(
-						_elm_lang$core$List$map,
-						function (x) {
-							return x.chance;
-						},
-						_p3.items));
-				var score = totalChance * f;
-				return A2(_ryanclarke$diginthedirt$Update$getItemFromChance, score, _p3.items);
-			}
-		}();
-		var newOutput = function () {
-			var _p4 = newInventoryItem;
-			if (_p4.ctor === 'Nothing') {
-				return model.output;
-			} else {
-				return {ctor: '::', _0: _p4._0.name, _1: model.output};
-			}
-		}();
-		var inventory = function () {
-			var _p5 = newInventoryItem;
-			if (_p5.ctor === 'Nothing') {
-				return model.inventory;
-			} else {
-				return {ctor: '::', _0: _p5._0, _1: model.inventory};
-			}
-		}();
+		var actions = A2(_elm_lang$core$List$map, initialize, model.actions);
 		return {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
 				model,
-				{inventory: inventory, finishedActions: newFinishedActions}),
-			_1: message
+				{actions: actions}),
+			_1: _elm_lang$core$Platform_Cmd$none
 		};
 	});
 var _ryanclarke$diginthedirt$Update$update = F2(
 	function (msg, model) {
-		var _p6 = msg;
-		switch (_p6.ctor) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
 			case 'Tick':
-				return A2(_ryanclarke$diginthedirt$Update$gameTick, model, _p6._0);
-			case 'Act':
-				return A2(_ryanclarke$diginthedirt$Update$startAct, model, _p6._0);
+				return A2(_ryanclarke$diginthedirt$GameTick$gameTick, model, _p0._0);
+			case 'StartAction':
+				return A2(_ryanclarke$diginthedirt$Update$startAction, model, _p0._0);
 			default:
-				return A2(_ryanclarke$diginthedirt$Update$roll, model, _p6._0);
+				return A2(_ryanclarke$diginthedirt$Processor$finishedAction, model, _p0._0);
 		}
-	});
-var _ryanclarke$diginthedirt$Update$Acc = F2(
-	function (a, b) {
-		return {chance: a, item: b};
 	});
 
 var _ryanclarke$diginthedirt$View$btn = function (action) {
@@ -9291,7 +9291,7 @@ var _ryanclarke$diginthedirt$View$btn = function (action) {
 				_0: _elm_lang$core$Basics$toString(_p1._0),
 				_1: {
 					cursor: 'progress',
-					action: _ryanclarke$diginthedirt$Model$Act(_ryanclarke$diginthedirt$Model$Noop)
+					action: _ryanclarke$diginthedirt$Model$StartAction(_ryanclarke$diginthedirt$Model$Noop)
 				}
 			};
 		} else {
@@ -9300,7 +9300,7 @@ var _ryanclarke$diginthedirt$View$btn = function (action) {
 				_0: '0',
 				_1: {
 					cursor: 'default',
-					action: _ryanclarke$diginthedirt$Model$Act(action.act)
+					action: _ryanclarke$diginthedirt$Model$StartAction(action.actionType)
 				}
 			};
 		}

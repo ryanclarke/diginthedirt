@@ -73,14 +73,14 @@ btn action =
                 At n ->
                     ( n |> toString
                     , { cursor = "progress"
-                      , action = Act Noop
+                      , action = StartAction Noop
                       }
                     )
 
                 _ ->
                     ( "0"
                     , { cursor = "default"
-                      , action = Act action.act
+                      , action = StartAction action.actionType
                       }
                     )
     in

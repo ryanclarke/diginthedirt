@@ -5,11 +5,11 @@ import Time exposing (Time)
 
 type Msg
     = Tick Time
-    | Act Act
+    | StartAction ActionType
     | Roll Float
 
 
-type Act
+type ActionType
     = Noop
     | Dig
     | Dream
@@ -22,7 +22,7 @@ type Progress
 
 
 type alias Action =
-    { act : Act
+    { actionType : ActionType
     , name : String
     , progress : Progress
     , duration : Float

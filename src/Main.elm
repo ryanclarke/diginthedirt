@@ -1,9 +1,9 @@
 module Main exposing (main)
 
-import Html
-import Time exposing (every, millisecond)
 import Actions
+import Html
 import Model exposing (Model, Msg(Tick))
+import Time exposing (every, millisecond)
 import Update exposing (update)
 import View exposing (view)
 
