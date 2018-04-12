@@ -7,7 +7,7 @@ all : List Action
 all =
     [ { actionType = Dig
       , name = "Dig"
-      , success = "Digging found "
+      , success = "Digging found a "
       , failure = "Digging found nothing"
       , progress = Inactive
       , duration = 2000
@@ -16,6 +16,18 @@ all =
             [ { name = "brick"
               , chance = 5
               , icon = "brick-pile"
+              }
+            , { name = "stick"
+              , chance = 10
+              , icon = "tree-branch"
+              }
+            , { name = "rock"
+              , chance = 10
+              , icon = "stone-pile"
+              }
+            , { name = "pirate hat"
+              , chance = 1
+              , icon = "pirate-hat"
               }
             ]
       }

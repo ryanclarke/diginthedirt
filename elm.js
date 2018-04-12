@@ -9086,7 +9086,7 @@ var _ryanclarke$diginthedirt$Actions$all = {
 	_0: {
 		actionType: _ryanclarke$diginthedirt$Model$Dig,
 		name: 'Dig',
-		success: 'Digging found ',
+		success: 'Digging found a ',
 		failure: 'Digging found nothing',
 		progress: _ryanclarke$diginthedirt$Model$Inactive,
 		duration: 2000,
@@ -9094,7 +9094,19 @@ var _ryanclarke$diginthedirt$Actions$all = {
 		items: {
 			ctor: '::',
 			_0: {name: 'brick', chance: 5, icon: 'brick-pile'},
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: {name: 'stick', chance: 10, icon: 'tree-branch'},
+				_1: {
+					ctor: '::',
+					_0: {name: 'rock', chance: 10, icon: 'stone-pile'},
+					_1: {
+						ctor: '::',
+						_0: {name: 'pirate hat', chance: 1, icon: 'pirate-hat'},
+						_1: {ctor: '[]'}
+					}
+				}
+			}
 		}
 	},
 	_1: {
