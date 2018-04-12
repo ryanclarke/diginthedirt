@@ -23,21 +23,23 @@ finishedAction model f =
         newInventoryItem =
             case List.head model.finishedActions of
                 Nothing ->
-                    Just {name = "air", chance = 0}
+                    Nothing
 
                 Just action ->
                     let
-                        totalChance =
+                        itemChance =
                             action.items
                                 |> List.map
                                     (\x -> x.chance)
                                 |> List.sum
 
                         score =
-                            totalChance * f
+                            (action.nullChance + itemChance) * f
 
                     in
-                        getItemFromChance score action.items
+                        Just { action = action
+                        , item = getItemFromChance score action.items
+                        }
 
         newFinishedActions =
             Maybe.withDefault [] (List.tail model.finishedActions)
@@ -48,7 +50,12 @@ finishedAction model f =
                     model.output
                 
                 Just x ->
-                    x.name :: model.output
+                    case x.item of
+                        Nothing ->
+                            x.action.failure :: model.output
+
+                        Just item ->
+                            (x.action.success ++ item.name) :: model.output
                         
 
         inventory =
@@ -57,7 +64,12 @@ finishedAction model f =
                     model.inventory
 
                 Just x ->
-                    x :: model.inventory
+                    case x.item of
+                        Nothing ->
+                            model.inventory
+
+                        Just item ->
+                            item :: model.inventory
 
         message =
             if (List.isEmpty newFinishedActions) then

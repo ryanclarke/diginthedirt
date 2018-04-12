@@ -49,7 +49,7 @@ mainView model =
         , panel "Action Log"
             (div [] (List.map (\x -> p [] [ text x ]) model.output))
         , panel "Inventory"
-            (div [] (List.map (\x -> p [] [ text x.name ]) model.inventory))
+            (div [] (List.map inventoryItem model.inventory))
         ]
 
 
@@ -97,3 +97,15 @@ btn action =
                 ]
             ]
             [ text action.name ]
+
+
+inventoryItem : Item -> Html Msg
+inventoryItem item =
+    div []
+        [ img
+            [ src ( String.concat [ "svg/", item.icon, ".svg" ] )
+            , class "w-4"
+            ] []
+        , p [ class "align-top inline" ] [ text item.name ]
+        ]
+

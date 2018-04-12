@@ -9051,13 +9051,13 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _ryanclarke$diginthedirt$Model$Action = F5(
-	function (a, b, c, d, e) {
-		return {actionType: a, name: b, progress: c, duration: d, items: e};
+var _ryanclarke$diginthedirt$Model$Action = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {actionType: a, name: b, success: c, failure: d, progress: e, duration: f, nullChance: g, items: h};
 	});
-var _ryanclarke$diginthedirt$Model$Item = F2(
-	function (a, b) {
-		return {name: a, chance: b};
+var _ryanclarke$diginthedirt$Model$Item = F3(
+	function (a, b, c) {
+		return {name: a, chance: b, icon: c};
 	});
 var _ryanclarke$diginthedirt$Model$Model = F8(
 	function (a, b, c, d, e, f, g, h) {
@@ -9086,16 +9086,15 @@ var _ryanclarke$diginthedirt$Actions$all = {
 	_0: {
 		actionType: _ryanclarke$diginthedirt$Model$Dig,
 		name: 'Dig',
+		success: 'Digging found ',
+		failure: 'Digging found nothing',
 		progress: _ryanclarke$diginthedirt$Model$Inactive,
 		duration: 2000,
+		nullChance: 10,
 		items: {
 			ctor: '::',
-			_0: {name: 'dirt', chance: 10},
-			_1: {
-				ctor: '::',
-				_0: {name: 'brick', chance: 5},
-				_1: {ctor: '[]'}
-			}
+			_0: {name: 'brick', chance: 5, icon: 'brick-pile'},
+			_1: {ctor: '[]'}
 		}
 	},
 	_1: {
@@ -9103,8 +9102,11 @@ var _ryanclarke$diginthedirt$Actions$all = {
 		_0: {
 			actionType: _ryanclarke$diginthedirt$Model$Dream,
 			name: 'Dream',
+			success: 'Deamed of ',
+			failure: 'Dreamed nothing',
 			progress: _ryanclarke$diginthedirt$Model$Inactive,
 			duration: 5000,
+			nullChance: 0,
 			items: {ctor: '[]'}
 		},
 		_1: {ctor: '[]'}
@@ -9137,19 +9139,22 @@ var _ryanclarke$diginthedirt$Processor$finishedAction = F2(
 		var newInventoryItem = function () {
 			var _p0 = _elm_lang$core$List$head(model.finishedActions);
 			if (_p0.ctor === 'Nothing') {
-				return _elm_lang$core$Maybe$Just(
-					{name: 'air', chance: 0});
+				return _elm_lang$core$Maybe$Nothing;
 			} else {
 				var _p1 = _p0._0;
-				var totalChance = _elm_lang$core$List$sum(
+				var itemChance = _elm_lang$core$List$sum(
 					A2(
 						_elm_lang$core$List$map,
 						function (x) {
 							return x.chance;
 						},
 						_p1.items));
-				var score = totalChance * f;
-				return A2(_ryanclarke$diginthedirt$Processor$getItemFromChance, score, _p1.items);
+				var score = (_p1.nullChance + itemChance) * f;
+				return _elm_lang$core$Maybe$Just(
+					{
+						action: _p1,
+						item: A2(_ryanclarke$diginthedirt$Processor$getItemFromChance, score, _p1.items)
+					});
 			}
 		}();
 		var newOutput = function () {
@@ -9157,15 +9162,30 @@ var _ryanclarke$diginthedirt$Processor$finishedAction = F2(
 			if (_p2.ctor === 'Nothing') {
 				return model.output;
 			} else {
-				return {ctor: '::', _0: _p2._0.name, _1: model.output};
+				var _p4 = _p2._0;
+				var _p3 = _p4.item;
+				if (_p3.ctor === 'Nothing') {
+					return {ctor: '::', _0: _p4.action.failure, _1: model.output};
+				} else {
+					return {
+						ctor: '::',
+						_0: A2(_elm_lang$core$Basics_ops['++'], _p4.action.success, _p3._0.name),
+						_1: model.output
+					};
+				}
 			}
 		}();
 		var inventory = function () {
-			var _p3 = newInventoryItem;
-			if (_p3.ctor === 'Nothing') {
+			var _p5 = newInventoryItem;
+			if (_p5.ctor === 'Nothing') {
 				return model.inventory;
 			} else {
-				return {ctor: '::', _0: _p3._0, _1: model.inventory};
+				var _p6 = _p5._0.item;
+				if (_p6.ctor === 'Nothing') {
+					return model.inventory;
+				} else {
+					return {ctor: '::', _0: _p6._0, _1: model.inventory};
+				}
 			}
 		}();
 		return {
@@ -9282,6 +9302,56 @@ var _ryanclarke$diginthedirt$Update$update = F2(
 		}
 	});
 
+var _ryanclarke$diginthedirt$View$inventoryItem = function (item) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$img,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$src(
+						_elm_lang$core$String$concat(
+							{
+								ctor: '::',
+								_0: 'svg/',
+								_1: {
+									ctor: '::',
+									_0: item.icon,
+									_1: {
+										ctor: '::',
+										_0: '.svg',
+										_1: {ctor: '[]'}
+									}
+								}
+							})),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('w-4'),
+						_1: {ctor: '[]'}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$p,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('align-top inline'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(item.name),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _ryanclarke$diginthedirt$View$btn = function (action) {
 	var _p0 = function () {
 		var _p1 = action.progress;
@@ -9444,19 +9514,7 @@ var _ryanclarke$diginthedirt$View$mainView = function (model) {
 						A2(
 							_elm_lang$html$Html$div,
 							{ctor: '[]'},
-							A2(
-								_elm_lang$core$List$map,
-								function (x) {
-									return A2(
-										_elm_lang$html$Html$p,
-										{ctor: '[]'},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text(x.name),
-											_1: {ctor: '[]'}
-										});
-								},
-								model.inventory))),
+							A2(_elm_lang$core$List$map, _ryanclarke$diginthedirt$View$inventoryItem, model.inventory))),
 					_1: {ctor: '[]'}
 				}
 			}
@@ -9638,12 +9696,8 @@ var _ryanclarke$diginthedirt$Main$init = function () {
 		actions: _ryanclarke$diginthedirt$Actions$all,
 		items: {
 			ctor: '::',
-			_0: {name: 'dirt', chance: 10},
-			_1: {
-				ctor: '::',
-				_0: {name: 'brick', chance: 5},
-				_1: {ctor: '[]'}
-			}
+			_0: {name: 'brick', chance: 5, icon: 'brick-pile'},
+			_1: {ctor: '[]'}
 		},
 		output: {
 			ctor: '::',

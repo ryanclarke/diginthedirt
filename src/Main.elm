@@ -27,11 +27,9 @@ init =
             , lastTimestamp = 0
             , actions = Actions.all
             , items =
-                [ { name = "dirt"
-                  , chance = 10
-                  }
-                , { name = "brick"
+                [ { name = "brick"
                   , chance = 5
+                  , icon = "brick-pile"
                   }
                 ]
             , output = [ "Nothing" ]

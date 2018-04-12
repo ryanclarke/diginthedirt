@@ -24,8 +24,11 @@ type Progress
 type alias Action =
     { actionType : ActionType
     , name : String
+    , success : String
+    , failure : String
     , progress : Progress
     , duration : Float
+    , nullChance : Float
     , items : List Item
     }
 
@@ -33,6 +36,7 @@ type alias Action =
 type alias Item =
     { name : String
     , chance : Float
+    , icon : String
     }
 
 
