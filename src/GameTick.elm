@@ -47,13 +47,13 @@ gameTick model time =
                             x
                     )
 
-        output =
-            finishedActions
-                |> List.map
-                    (\x -> x.name)
-                |> List.foldr
-                    (::)
-                    model.output
+        -- output =
+        --     finishedActions
+        --         |> List.map
+        --             (\x -> x.name)
+        --         |> List.foldr
+        --             (::)
+        --             model.output
 
         allFinishedActions =
             List.append
@@ -65,7 +65,7 @@ gameTick model time =
             | lastTimestamp = time
             , lastTickDuration = sinceLastTick
             , actions = processedActions
-            , output = output
+            -- , output = output
             , finishedActions = allFinishedActions
             }
     in

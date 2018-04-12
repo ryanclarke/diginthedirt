@@ -80,6 +80,7 @@ finishedAction model f =
         ( { model
             | inventory = inventory
             , finishedActions = newFinishedActions
+            , output = newOutput
           }
         , message
         )

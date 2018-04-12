@@ -9204,7 +9204,7 @@ var _ryanclarke$diginthedirt$Processor$finishedAction = F2(
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
 				model,
-				{inventory: inventory, finishedActions: newFinishedActions}),
+				{inventory: inventory, finishedActions: newFinishedActions, output: newOutput}),
 			_1: message
 		};
 	});
@@ -9255,19 +9255,6 @@ var _ryanclarke$diginthedirt$GameTick$gameTick = F2(
 				return _elm_lang$core$Native_Utils.eq(x.progress, _ryanclarke$diginthedirt$Model$Finished);
 			},
 			actions);
-		var output = A3(
-			_elm_lang$core$List$foldr,
-			F2(
-				function (x, y) {
-					return {ctor: '::', _0: x, _1: y};
-				}),
-			model.output,
-			A2(
-				_elm_lang$core$List$map,
-				function (x) {
-					return x.name;
-				},
-				finishedActions));
 		var allFinishedActions = A2(_elm_lang$core$List$append, model.finishedActions, finishedActions);
 		var processedActions = A2(
 			_elm_lang$core$List$map,
@@ -9279,7 +9266,7 @@ var _ryanclarke$diginthedirt$GameTick$gameTick = F2(
 			actions);
 		var newModel = _elm_lang$core$Native_Utils.update(
 			model,
-			{lastTimestamp: time, lastTickDuration: sinceLastTick, actions: processedActions, output: output, finishedActions: allFinishedActions});
+			{lastTimestamp: time, lastTickDuration: sinceLastTick, actions: processedActions, finishedActions: allFinishedActions});
 		return _elm_lang$core$List$isEmpty(allFinishedActions) ? {ctor: '_Tuple2', _0: newModel, _1: _elm_lang$core$Platform_Cmd$none} : _ryanclarke$diginthedirt$Processor$finishedActions(newModel);
 	});
 
