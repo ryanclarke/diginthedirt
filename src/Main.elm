@@ -32,7 +32,7 @@ init =
                   , icon = "brick-pile"
                   }
                 ]
-            , output = [ "Nothing" ]
+            , output = List.range 0 9 |> List.map (\x -> " ")
             , inventory = []
             , finishedActions = []
             }

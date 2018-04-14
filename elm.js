@@ -9355,7 +9355,11 @@ var _ryanclarke$diginthedirt$Update$update = F2(
 var _ryanclarke$diginthedirt$View$inventoryItem = function (item) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('w-full'),
+			_1: {ctor: '[]'}
+		},
 		{
 			ctor: '::',
 			_0: A2(
@@ -9379,7 +9383,7 @@ var _ryanclarke$diginthedirt$View$inventoryItem = function (item) {
 							})),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('w-4'),
+						_0: _elm_lang$html$Html_Attributes$class('mr-2 w-4'),
 						_1: {ctor: '[]'}
 					}
 				},
@@ -9387,10 +9391,10 @@ var _ryanclarke$diginthedirt$View$inventoryItem = function (item) {
 			_1: {
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$p,
+					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('align-top inline'),
+						_0: _elm_lang$html$Html_Attributes$class('align-top inline w-1/2'),
 						_1: {ctor: '[]'}
 					},
 					{
@@ -9401,10 +9405,10 @@ var _ryanclarke$diginthedirt$View$inventoryItem = function (item) {
 				_1: {
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$p,
+						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('align-top text-left inline'),
+							_0: _elm_lang$html$Html_Attributes$class('align-top float-right inline'),
 							_1: {ctor: '[]'}
 						},
 						{
@@ -9493,13 +9497,14 @@ var _ryanclarke$diginthedirt$View$btn = function (action) {
 			_1: {ctor: '[]'}
 		});
 };
-var _ryanclarke$diginthedirt$View$panel = F2(
-	function (title, html) {
+var _ryanclarke$diginthedirt$View$panel = F3(
+	function (title, width, html) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('w-1/2 inline m-2 mt-6'),
+				_0: _elm_lang$html$Html_Attributes$class(
+					A2(_elm_lang$core$String$append, 'inline m-2 mt-6 ', width)),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -9508,7 +9513,7 @@ var _ryanclarke$diginthedirt$View$panel = F2(
 					_elm_lang$html$Html$h2,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('bg-green-light rounded-t-lg border-solid border-2 border-green-dark border-b-0 p-1'),
+						_0: _elm_lang$html$Html_Attributes$class('bg-green-light rounded-t-lg border-solid border-2 border-green-dark border-b-0 p-1 text-center'),
 						_1: {ctor: '[]'}
 					},
 					{
@@ -9527,7 +9532,18 @@ var _ryanclarke$diginthedirt$View$panel = F2(
 						},
 						{
 							ctor: '::',
-							_0: html,
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('p-4'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: html,
+									_1: {ctor: '[]'}
+								}),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -9539,23 +9555,25 @@ var _ryanclarke$diginthedirt$View$mainView = function (model) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('text-center flex -m-2'),
+			_0: _elm_lang$html$Html_Attributes$class('flex -m-2'),
 			_1: {ctor: '[]'}
 		},
 		{
 			ctor: '::',
-			_0: A2(
+			_0: A3(
 				_ryanclarke$diginthedirt$View$panel,
 				'Actions',
+				'w-1/4',
 				A2(
 					_elm_lang$html$Html$div,
 					{ctor: '[]'},
 					A2(_elm_lang$core$List$map, _ryanclarke$diginthedirt$View$btn, model.actions))),
 			_1: {
 				ctor: '::',
-				_0: A2(
+				_0: A3(
 					_ryanclarke$diginthedirt$View$panel,
 					'Action Log',
+					'w-1/2',
 					A2(
 						_elm_lang$html$Html$div,
 						{ctor: '[]'},
@@ -9571,12 +9589,13 @@ var _ryanclarke$diginthedirt$View$mainView = function (model) {
 										_1: {ctor: '[]'}
 									});
 							},
-							model.output))),
+							A2(_elm_lang$core$List$take, 10, model.output)))),
 				_1: {
 					ctor: '::',
-					_0: A2(
+					_0: A3(
 						_ryanclarke$diginthedirt$View$panel,
 						'Inventory',
+						'w-1/4',
 						A2(
 							_elm_lang$html$Html$div,
 							{ctor: '[]'},
@@ -9724,7 +9743,7 @@ var _ryanclarke$diginthedirt$View$view = function (model) {
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('container mx-auto'),
+				_0: _elm_lang$html$Html_Attributes$class('container mx-auto max-w-lg'),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -9765,11 +9784,12 @@ var _ryanclarke$diginthedirt$Main$init = function () {
 			_0: {name: 'brick', chance: 5, icon: 'brick-pile'},
 			_1: {ctor: '[]'}
 		},
-		output: {
-			ctor: '::',
-			_0: 'Nothing',
-			_1: {ctor: '[]'}
-		},
+		output: A2(
+			_elm_lang$core$List$map,
+			function (x) {
+				return ' ';
+			},
+			A2(_elm_lang$core$List$range, 0, 9)),
 		inventory: {ctor: '[]'},
 		finishedActions: {ctor: '[]'}
 	};

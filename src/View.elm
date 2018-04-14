@@ -17,7 +17,7 @@ view model =
                 []
 
         wrapper =
-            (\body -> div [ class "container mx-auto" ] [ css, headerView, body ])
+            (\body -> div [ class "container mx-auto max-w-lg" ] [ css, headerView, body ])
     in
         wrapper (mainView model)
 
@@ -43,25 +43,28 @@ headerView =
 
 mainView : Model -> Html Msg
 mainView model =
-    div [ class "text-center flex -m-2" ]
-        [ panel "Actions"
+    div [ class "flex -m-2" ]
+        [ panel "Actions" "w-1/4"
             (div [] (List.map btn model.actions))
-        , panel "Action Log"
-            (div [] (List.map (\x -> p [] [ text x ]) model.output))
-        , panel "Inventory"
+        , panel "Action Log" "w-1/2"
+            (div [] (model.output |> List.take 10 |> List.map (\x -> p [] [ text x ])))
+        , panel "Inventory" "w-1/4"
             (div [] (List.map inventoryItem model.inventory))
         ]
 
 
-panel : String -> Html Msg -> Html Msg
-panel title html =
-    div [ class "w-1/2 inline m-2 mt-6" ]
+panel : String -> String -> Html Msg -> Html Msg
+panel title width html =
+    div [ class (String.append "inline m-2 mt-6 " width) ]
         [ h2
-            [ class "bg-green-light rounded-t-lg border-solid border-2 border-green-dark border-b-0 p-1" ]
+            [ class "bg-green-light rounded-t-lg border-solid border-2 border-green-dark border-b-0 p-1 text-center" ]
             [ text title ]
         , div
             [ class "border-solid border-2 border-green-dark border-t-0" ]
-            [ html ]
+            [ div 
+                [ class "p-4"]
+                [ html ]
+            ]
         ]
 
 
@@ -101,12 +104,12 @@ btn action =
 
 inventoryItem : InventoryItem -> Html Msg
 inventoryItem item =
-    div []
+    div [ class "w-full"]
         [ img
             [ src ( String.concat [ "svg/", item.icon, ".svg" ] )
-            , class "w-4"
+            , class "mr-2 w-4"
             ] []
-        , p [ class "align-top inline" ] [ text item.name ]
-        , p [ class "align-top text-left inline" ] [ item.quantity |> toString |> text ]
+        , div [ class "align-top inline w-1/2" ] [ text item.name ]
+        , div [ class "align-top float-right inline" ] [ item.quantity |> toString |> text ]
         ]
 
