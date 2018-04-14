@@ -47,7 +47,7 @@ mainView model =
         [ panel "Actions" "w-1/4"
             (div [] (List.map btn model.actions))
         , panel "Action Log" "w-1/2"
-            (div [] (model.output |> List.take 10 |> List.map (\x -> p [] [ text x ])))
+            (div [] (actionLog model.output))
         , panel "Inventory" "w-1/4"
             (div [] (List.map inventoryItem model.inventory))
         ]
@@ -65,7 +65,7 @@ panel title width html =
                 [ class "p-4"]
                 [ html ]
             ]
-        ]
+        ] 
 
 
 btn : Action -> Html Msg
@@ -100,6 +100,32 @@ btn action =
                 ]
             ]
             [ text action.name ]
+
+
+actionLog : List String -> List (Html Msg)
+actionLog output =
+    let
+        grad =
+            [ "#000"
+            , "#666"
+            , "#777"
+            , "#888"
+            , "#999"
+            , "#aaa"
+            , "#bbb"
+            , "#ccc"
+            , "#ddd"
+            , "#eee"
+            ]
+    
+    in 
+        output
+            |> List.take 10
+            |> List.map2 
+                (\c t -> p 
+                    [ style [ ("color", c ) ] ] 
+                    [ text t ])
+                grad
 
 
 inventoryItem : InventoryItem -> Html Msg

@@ -9422,6 +9422,73 @@ var _ryanclarke$diginthedirt$View$inventoryItem = function (item) {
 			}
 		});
 };
+var _ryanclarke$diginthedirt$View$actionLog = function (output) {
+	var grad = {
+		ctor: '::',
+		_0: '#000',
+		_1: {
+			ctor: '::',
+			_0: '#666',
+			_1: {
+				ctor: '::',
+				_0: '#777',
+				_1: {
+					ctor: '::',
+					_0: '#888',
+					_1: {
+						ctor: '::',
+						_0: '#999',
+						_1: {
+							ctor: '::',
+							_0: '#aaa',
+							_1: {
+								ctor: '::',
+								_0: '#bbb',
+								_1: {
+									ctor: '::',
+									_0: '#ccc',
+									_1: {
+										ctor: '::',
+										_0: '#ddd',
+										_1: {
+											ctor: '::',
+											_0: '#eee',
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	};
+	return A3(
+		_elm_lang$core$List$map2,
+		F2(
+			function (c, t) {
+				return A2(
+					_elm_lang$html$Html$p,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'color', _1: c},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(t),
+						_1: {ctor: '[]'}
+					});
+			}),
+		grad,
+		A2(_elm_lang$core$List$take, 10, output));
+};
 var _ryanclarke$diginthedirt$View$btn = function (action) {
 	var _p0 = function () {
 		var _p1 = action.progress;
@@ -9577,19 +9644,7 @@ var _ryanclarke$diginthedirt$View$mainView = function (model) {
 					A2(
 						_elm_lang$html$Html$div,
 						{ctor: '[]'},
-						A2(
-							_elm_lang$core$List$map,
-							function (x) {
-								return A2(
-									_elm_lang$html$Html$p,
-									{ctor: '[]'},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(x),
-										_1: {ctor: '[]'}
-									});
-							},
-							A2(_elm_lang$core$List$take, 10, model.output)))),
+						_ryanclarke$diginthedirt$View$actionLog(model.output))),
 				_1: {
 					ctor: '::',
 					_0: A3(
