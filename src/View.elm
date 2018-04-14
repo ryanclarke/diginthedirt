@@ -99,7 +99,7 @@ btn action =
             [ text action.name ]
 
 
-inventoryItem : Item -> Html Msg
+inventoryItem : InventoryItem -> Html Msg
 inventoryItem item =
     div []
         [ img
@@ -107,5 +107,6 @@ inventoryItem item =
             , class "w-4"
             ] []
         , p [ class "align-top inline" ] [ text item.name ]
+        , p [ class "align-top text-left inline" ] [ item.quantity |> toString |> text ]
         ]
 

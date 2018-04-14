@@ -58,7 +58,7 @@ finishedAction model f =
                             (x.action.success ++ item.name) :: model.output
                         
 
-        inventory =
+        newInventory =
             case newInventoryItem of
                 Nothing ->
                     model.inventory
@@ -69,7 +69,7 @@ finishedAction model f =
                             model.inventory
 
                         Just item ->
-                            item :: model.inventory
+                            addToInventory model.inventory item
 
         message =
             if (List.isEmpty newFinishedActions) then
@@ -78,12 +78,53 @@ finishedAction model f =
                 Random.generate Roll (Random.float 0 1)
     in
         ( { model
-            | inventory = inventory
+            | inventory = newInventory
             , finishedActions = newFinishedActions
             , output = newOutput
           }
         , message
         )
+
+
+addToInventory : List InventoryItem -> Item -> List InventoryItem
+addToInventory inventory item =
+    let
+        toInventoryItem : Item -> InventoryItem
+        toInventoryItem item =
+            { name = item.name
+            , icon = item.icon
+            , quantity = 1
+            }
+
+        il =
+            inventory
+                |> List.filter
+                    (\i -> i.name == item.name)
+                |> List.head
+
+    in
+        case il of
+            Nothing ->
+                ((toInventoryItem item) :: inventory) 
+                    |> List.sortBy .name
+
+            Just inventoryItem ->
+                inventory
+                    |> updateIf
+                        (\i -> i.name == item.name)
+                        (\i -> { i | quantity = i.quantity + 1 })
+
+
+updateIf : (a -> Bool) -> (a -> a) -> List a -> List a
+updateIf predicate update list =
+    List.map
+        (\item ->
+            if predicate item then
+                update item
+            else
+                item
+        )
+        list
 
 
 tryItemForSuccess : Item -> Acc -> Acc

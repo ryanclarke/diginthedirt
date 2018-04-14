@@ -9059,6 +9059,10 @@ var _ryanclarke$diginthedirt$Model$Item = F3(
 	function (a, b, c) {
 		return {name: a, chance: b, icon: c};
 	});
+var _ryanclarke$diginthedirt$Model$InventoryItem = F3(
+	function (a, b, c) {
+		return {name: a, icon: b, quantity: c};
+	});
 var _ryanclarke$diginthedirt$Model$Model = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {tickDuration: a, lastTickDuration: b, lastTimestamp: c, actions: d, items: e, output: f, inventory: g, finishedActions: h};
@@ -9138,6 +9142,53 @@ var _ryanclarke$diginthedirt$Processor$getItemFromChance = F2(
 		var result = A3(_elm_lang$core$List$foldl, _ryanclarke$diginthedirt$Processor$tryItemForSuccess, seed, items);
 		return (_elm_lang$core$Native_Utils.cmp(result.chance, 0) < 1) ? result.item : _elm_lang$core$Maybe$Nothing;
 	});
+var _ryanclarke$diginthedirt$Processor$updateIf = F3(
+	function (predicate, update, list) {
+		return A2(
+			_elm_lang$core$List$map,
+			function (item) {
+				return predicate(item) ? update(item) : item;
+			},
+			list);
+	});
+var _ryanclarke$diginthedirt$Processor$addToInventory = F2(
+	function (inventory, item) {
+		var il = _elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$filter,
+				function (i) {
+					return _elm_lang$core$Native_Utils.eq(i.name, item.name);
+				},
+				inventory));
+		var toInventoryItem = function (item) {
+			return {name: item.name, icon: item.icon, quantity: 1};
+		};
+		var _p0 = il;
+		if (_p0.ctor === 'Nothing') {
+			return A2(
+				_elm_lang$core$List$sortBy,
+				function (_) {
+					return _.name;
+				},
+				{
+					ctor: '::',
+					_0: toInventoryItem(item),
+					_1: inventory
+				});
+		} else {
+			return A3(
+				_ryanclarke$diginthedirt$Processor$updateIf,
+				function (i) {
+					return _elm_lang$core$Native_Utils.eq(i.name, item.name);
+				},
+				function (i) {
+					return _elm_lang$core$Native_Utils.update(
+						i,
+						{quantity: i.quantity + 1});
+				},
+				inventory);
+		}
+	});
 var _ryanclarke$diginthedirt$Processor$finishedAction = F2(
 	function (model, f) {
 		var newFinishedActions = A2(
@@ -9149,54 +9200,54 @@ var _ryanclarke$diginthedirt$Processor$finishedAction = F2(
 			_ryanclarke$diginthedirt$Model$Roll,
 			A2(_elm_lang$core$Random$float, 0, 1));
 		var newInventoryItem = function () {
-			var _p0 = _elm_lang$core$List$head(model.finishedActions);
-			if (_p0.ctor === 'Nothing') {
+			var _p1 = _elm_lang$core$List$head(model.finishedActions);
+			if (_p1.ctor === 'Nothing') {
 				return _elm_lang$core$Maybe$Nothing;
 			} else {
-				var _p1 = _p0._0;
+				var _p2 = _p1._0;
 				var itemChance = _elm_lang$core$List$sum(
 					A2(
 						_elm_lang$core$List$map,
 						function (x) {
 							return x.chance;
 						},
-						_p1.items));
-				var score = (_p1.nullChance + itemChance) * f;
+						_p2.items));
+				var score = (_p2.nullChance + itemChance) * f;
 				return _elm_lang$core$Maybe$Just(
 					{
-						action: _p1,
-						item: A2(_ryanclarke$diginthedirt$Processor$getItemFromChance, score, _p1.items)
+						action: _p2,
+						item: A2(_ryanclarke$diginthedirt$Processor$getItemFromChance, score, _p2.items)
 					});
 			}
 		}();
 		var newOutput = function () {
-			var _p2 = newInventoryItem;
-			if (_p2.ctor === 'Nothing') {
+			var _p3 = newInventoryItem;
+			if (_p3.ctor === 'Nothing') {
 				return model.output;
 			} else {
-				var _p4 = _p2._0;
-				var _p3 = _p4.item;
-				if (_p3.ctor === 'Nothing') {
-					return {ctor: '::', _0: _p4.action.failure, _1: model.output};
+				var _p5 = _p3._0;
+				var _p4 = _p5.item;
+				if (_p4.ctor === 'Nothing') {
+					return {ctor: '::', _0: _p5.action.failure, _1: model.output};
 				} else {
 					return {
 						ctor: '::',
-						_0: A2(_elm_lang$core$Basics_ops['++'], _p4.action.success, _p3._0.name),
+						_0: A2(_elm_lang$core$Basics_ops['++'], _p5.action.success, _p4._0.name),
 						_1: model.output
 					};
 				}
 			}
 		}();
-		var inventory = function () {
-			var _p5 = newInventoryItem;
-			if (_p5.ctor === 'Nothing') {
+		var newInventory = function () {
+			var _p6 = newInventoryItem;
+			if (_p6.ctor === 'Nothing') {
 				return model.inventory;
 			} else {
-				var _p6 = _p5._0.item;
-				if (_p6.ctor === 'Nothing') {
+				var _p7 = _p6._0.item;
+				if (_p7.ctor === 'Nothing') {
 					return model.inventory;
 				} else {
-					return {ctor: '::', _0: _p6._0, _1: model.inventory};
+					return A2(_ryanclarke$diginthedirt$Processor$addToInventory, model.inventory, _p7._0);
 				}
 			}
 		}();
@@ -9204,7 +9255,7 @@ var _ryanclarke$diginthedirt$Processor$finishedAction = F2(
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
 				model,
-				{inventory: inventory, finishedActions: newFinishedActions, output: newOutput}),
+				{inventory: newInventory, finishedActions: newFinishedActions, output: newOutput}),
 			_1: message
 		};
 	});
@@ -9347,7 +9398,23 @@ var _ryanclarke$diginthedirt$View$inventoryItem = function (item) {
 						_0: _elm_lang$html$Html$text(item.name),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$p,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('align-top text-left inline'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								_elm_lang$core$Basics$toString(item.quantity)),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };

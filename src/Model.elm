@@ -39,6 +39,12 @@ type alias Item =
     , icon : String
     }
 
+type alias InventoryItem =
+    { name : String
+    , icon : String
+    , quantity : Int
+    }
+
 
 type alias Model =
     { tickDuration : Float
@@ -47,6 +53,6 @@ type alias Model =
     , actions : List Action
     , items : List Item
     , output : List String
-    , inventory : List Item
+    , inventory : List InventoryItem
     , finishedActions : List Action
     }
