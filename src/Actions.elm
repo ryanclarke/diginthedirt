@@ -11,23 +11,31 @@ all =
       , failure = "Digging found nothing"
       , progress = Inactive
       , duration = 2000
-      , nullChance = 10
+      , nullChance = 25
       , items =
             [ { name = "brick"
-              , chance = 5
+              , chance = 10
               , icon = "brick-pile"
               }
             , { name = "stick"
-              , chance = 10
+              , chance = 25
               , icon = "tree-branch"
               }
             , { name = "rock"
-              , chance = 10
+              , chance = 25
               , icon = "stone-pile"
               }
             , { name = "pirate hat"
               , chance = 1
               , icon = "pirate-hat"
+              }
+            , { name = "cowboy hat"
+              , chance = 1
+              , icon = "western-hat"
+              }
+            , { name = "sombrero"
+              , chance = 1
+              , icon = "sombrero"
               }
             ]
       }

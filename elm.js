@@ -9094,20 +9094,28 @@ var _ryanclarke$diginthedirt$Actions$all = {
 		failure: 'Digging found nothing',
 		progress: _ryanclarke$diginthedirt$Model$Inactive,
 		duration: 2000,
-		nullChance: 10,
+		nullChance: 25,
 		items: {
 			ctor: '::',
-			_0: {name: 'brick', chance: 5, icon: 'brick-pile'},
+			_0: {name: 'brick', chance: 10, icon: 'brick-pile'},
 			_1: {
 				ctor: '::',
-				_0: {name: 'stick', chance: 10, icon: 'tree-branch'},
+				_0: {name: 'stick', chance: 25, icon: 'tree-branch'},
 				_1: {
 					ctor: '::',
-					_0: {name: 'rock', chance: 10, icon: 'stone-pile'},
+					_0: {name: 'rock', chance: 25, icon: 'stone-pile'},
 					_1: {
 						ctor: '::',
 						_0: {name: 'pirate hat', chance: 1, icon: 'pirate-hat'},
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: {name: 'cowboy hat', chance: 1, icon: 'western-hat'},
+							_1: {
+								ctor: '::',
+								_0: {name: 'sombrero', chance: 1, icon: 'sombrero'},
+								_1: {ctor: '[]'}
+							}
+						}
 					}
 				}
 			}
