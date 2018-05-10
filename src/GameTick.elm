@@ -4,6 +4,7 @@ import Model exposing (..)
 import Processor
 import Time exposing (Time)
 
+
 gameTick : Model -> Time -> ( Model, Cmd Msg )
 gameTick model time =
     let
@@ -13,63 +14,81 @@ gameTick model time =
         actions =
             model.actions
                 |> List.map
-                    (\x ->
-                        case x.progress of
+                    (\a ->
+                        case a.progress of
                             Inactive ->
-                                x
+                                a
 
                             At n ->
                                 let
                                     pct =
-                                        n - (sinceLastTick / x.duration * 100)
+                                        n - (sinceLastTick / a.duration * 100)
                                 in
                                     if pct < 0 then
-                                        { x | progress = Finished }
+                                        finished a
                                     else
-                                        { x | progress = At pct }
+                                        at pct a
 
                             Finished ->
-                                { x | progress = Inactive }
+                                inactive a
                     )
-
-        finishedActions =
-                actions
-                |> List.filter
-                    (\x -> x.progress == Finished)
 
         processedActions =
             actions
                 |> List.map
-                    (\x ->
-                        if x.progress == Finished then
-                            { x | progress = Inactive }
+                    (\a ->
+                        if a |> isFinished then
+                            inactive a
                         else
-                            x
+                            a
                     )
 
-        -- output =
-        --     finishedActions
-        --         |> List.map
-        --             (\x -> x.name)
-        --         |> List.foldr
-        --             (::)
-        --             model.output
-
         allFinishedActions =
-            List.append
-                model.finishedActions
-                finishedActions
+            actions
+                |> List.filter isFinished
+                |> List.append
+                    model.finishedActions
 
         newModel =
             { model
-            | lastTimestamp = time
-            , lastTickDuration = sinceLastTick
-            , actions = processedActions
-            -- , output = output
-            , finishedActions = allFinishedActions
+                | lastTimestamp = time
+                , lastTickDuration = sinceLastTick
+                , actions = processedActions
+                , finishedActions = allFinishedActions
             }
     in
         if List.isEmpty allFinishedActions then
-            (newModel, Cmd.none)
+            ( newModel, Cmd.none )
         else
             (Processor.finishedActions newModel)
+
+
+updateProgress : Progress -> Action -> Action
+updateProgress progress aaction =
+    { aaction
+        | progress = progress
+    }
+
+
+finished : Action -> Action
+finished =
+    updateProgress Finished
+
+
+inactive : Action -> Action
+inactive =
+    updateProgress Inactive
+
+
+at : Float -> Action -> Action
+at pct =
+    updateProgress (At pct)
+
+
+checkProgress : Progress -> Action -> Bool
+checkProgress progress action =
+    action.progress == progress
+
+
+isFinished : Action -> Bool
+isFinished = checkProgress Finished
