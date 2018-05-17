@@ -35,11 +35,11 @@ finishedAction model f =
 
                         score =
                             (action.nullChance + itemChance) * f
-
                     in
-                        Just { action = action
-                        , item = getItemFromChance score action.items
-                        }
+                        Just
+                            { action = action
+                            , item = getItemFromChance score action.items
+                            }
 
         newFinishedActions =
             Maybe.withDefault [] (List.tail model.finishedActions)
@@ -48,7 +48,7 @@ finishedAction model f =
             case newInventoryItem of
                 Nothing ->
                     model.output
-                
+
                 Just x ->
                     case x.item of
                         Nothing ->
@@ -56,7 +56,6 @@ finishedAction model f =
 
                         Just item ->
                             (x.action.success ++ item.name) :: model.output
-                        
 
         newInventory =
             case newInventoryItem of
@@ -94,6 +93,7 @@ addToInventory inventory item =
             { name = item.name
             , icon = item.icon
             , quantity = 1
+            , newness = 10
             }
 
         il =
@@ -101,21 +101,25 @@ addToInventory inventory item =
                 |> List.filter
                     (\i -> i.name == item.name)
                 |> List.head
-
     in
         case il of
             Nothing ->
-                ((toInventoryItem item) :: inventory) 
+                ((toInventoryItem item) :: inventory)
                     |> List.sortBy .name
 
             Just inventoryItem ->
                 inventory
                     |> updateIf
                         (\i -> i.name == item.name)
-                        (\i -> { i | quantity = i.quantity + 1 })
+                        (\i ->
+                            { i
+                                | quantity = i.quantity + 1
+                                , newness = 10
+                            }
+                        )
 
 
-updateIf : (a -> Bool) -> (a -> a) -> List a -> List a
+updateIf : (InventoryItem -> Bool) -> (InventoryItem -> InventoryItem) -> List InventoryItem -> List InventoryItem
 updateIf predicate update list =
     List.map
         (\item ->
@@ -138,11 +142,10 @@ tryItemForSuccess item acc =
                 Just (Maybe.withDefault item acc.item)
             else
                 Nothing
-
     in
         { chance = newChance
         , item = newItem
-        } 
+        }
 
 
 getItemFromChance : Float -> List Item -> Maybe Item
@@ -153,10 +156,8 @@ getItemFromChance chance items =
 
         result =
             List.foldl tryItemForSuccess seed items
-
     in
         if result.chance <= 0 then
             result.item
         else
             Nothing
-

@@ -11,78 +11,75 @@ gameTick model time =
         sinceLastTick =
             time - model.lastTimestamp
 
-        actions =
+        updatedActions =
             model.actions
                 |> List.map
-                    (\a ->
-                        case a.progress of
-                            Inactive ->
-                                a
-
-                            At n ->
-                                let
-                                    pct =
-                                        n - (sinceLastTick / a.duration * 100)
-                                in
-                                    if pct < 0 then
-                                        finished a
-                                    else
-                                        at pct a
-
-                            Finished ->
-                                inactive a
-                    )
+                    (updateProgress sinceLastTick)
 
         processedActions =
-            actions
+            updatedActions
                 |> List.map
-                    (\a ->
-                        if a |> isFinished then
-                            inactive a
-                        else
-                            a
-                    )
+                    inactivatedFinished
 
-        allFinishedActions =
-            actions
+        finishedActions =
+            updatedActions
                 |> List.filter isFinished
                 |> List.append
                     model.finishedActions
+
+        agedInventory =
+            model.inventory
+                |> List.map
+                    (\i -> { i | newness = i.newness - 1 })
 
         newModel =
             { model
                 | lastTimestamp = time
                 , lastTickDuration = sinceLastTick
                 , actions = processedActions
-                , finishedActions = allFinishedActions
+                , finishedActions = finishedActions
+                , inventory = agedInventory
             }
     in
-        if List.isEmpty allFinishedActions then
+        if List.isEmpty finishedActions then
             ( newModel, Cmd.none )
         else
             (Processor.finishedActions newModel)
 
 
-updateProgress : Progress -> Action -> Action
-updateProgress progress aaction =
-    { aaction
+updateProgress : Float -> Action -> Action
+updateProgress sinceLastTick action =
+    case action.progress of
+        Inactive ->
+            action
+
+        At n ->
+            let
+                pct =
+                    n - (sinceLastTick / action.duration * 100)
+            in
+                if pct < 0 then
+                    setActionProgress Finished action
+                else
+                    setActionProgress (At pct) action
+
+        Finished ->
+            setActionProgress Inactive action
+
+
+inactivatedFinished : Action -> Action
+inactivatedFinished action =
+    if action |> isFinished then
+        setActionProgress Inactive action
+    else
+        action
+
+
+setActionProgress : Progress -> Action -> Action
+setActionProgress progress action =
+    { action
         | progress = progress
     }
-
-
-finished : Action -> Action
-finished =
-    updateProgress Finished
-
-
-inactive : Action -> Action
-inactive =
-    updateProgress Inactive
-
-
-at : Float -> Action -> Action
-at pct =
-    updateProgress (At pct)
 
 
 checkProgress : Progress -> Action -> Bool
@@ -91,4 +88,5 @@ checkProgress progress action =
 
 
 isFinished : Action -> Bool
-isFinished = checkProgress Finished
+isFinished =
+    checkProgress Finished

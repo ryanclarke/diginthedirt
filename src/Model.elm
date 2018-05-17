@@ -43,6 +43,7 @@ type alias InventoryItem =
     { name : String
     , icon : String
     , quantity : Int
+    , newness : Float
     }
 
 
