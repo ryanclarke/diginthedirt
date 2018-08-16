@@ -39,6 +39,7 @@ type alias Item =
     , icon : String
     }
 
+
 type alias InventoryItem =
     { name : String
     , icon : String

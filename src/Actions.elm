@@ -25,6 +25,10 @@ all =
               , chance = 25
               , icon = "stone-pile"
               }
+            , { name = "string"
+              , chance = 10
+              , icon = "whiplash"
+              }
             , { name = "pirate hat"
               , chance = 1
               , icon = "pirate-hat"

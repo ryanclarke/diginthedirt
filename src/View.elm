@@ -48,7 +48,7 @@ mainView model =
             (div [] (List.map btn model.actions))
         , panel "Action Log" "w-1/2"
             (div [] (actionLog model.output))
-        , panel "Inventory" "w-1/4"
+        , panel "Backpack" "w-1/4"
             (div [] (List.map inventoryItem model.inventory))
         ]
 
