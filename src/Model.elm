@@ -11,6 +11,7 @@ type Msg
 
 type ActionType
     = Noop
+    | Build
     | Dig
     | Dream
 
@@ -30,6 +31,7 @@ type alias Action =
     , duration : Float
     , nullChance : Float
     , items : List Item
+    , recipe : Maybe (List Ingredient)
     }
 
 
@@ -45,6 +47,12 @@ type alias InventoryItem =
     , icon : String
     , quantity : Int
     , newness : Float
+    }
+
+
+type alias Ingredient =
+    { name : String
+    , quantity : Int
     }
 
 

@@ -2,6 +2,7 @@ module Processor exposing (finishedAction, finishedActions)
 
 import Model exposing (..)
 import Random
+import Dict exposing (..)
 
 
 type alias Acc =
@@ -70,17 +71,26 @@ finishedAction model f =
                         Just item ->
                             addToInventory model.inventory item
 
+        newModel = 
+            { model
+            | inventory = newInventory
+            , finishedActions = newFinishedActions
+            , output = newOutput
+            }
+
+        newNewModel =
+            if (List.isEmpty newFinishedActions) then
+                enableActions newModel
+            else
+                newModel
+
         message =
             if (List.isEmpty newFinishedActions) then
                 Cmd.none
             else
                 Random.generate Roll (Random.float 0 1)
     in
-        ( { model
-            | inventory = newInventory
-            , finishedActions = newFinishedActions
-            , output = newOutput
-          }
+        ( newNewModel
         , message
         )
 
@@ -161,3 +171,82 @@ getItemFromChance chance items =
             result.item
         else
             Nothing
+
+enableActions : Model -> Model
+enableActions model =
+    let
+        build =
+            { actionType = Build
+            , name = "Build fishing pole"
+            , success = "Built a "
+            , failure = "Built nothing"
+            , progress = Inactive
+            , duration = 5000
+            , nullChance = 0
+            , items =
+                [ { name = "fishing pole"
+                  , chance = 1
+                  , icon = "brick-pile"
+                  }
+                ]
+            , recipe =
+                Just [ { name = "string", quantity = 1 }
+                     , { name = "stick", quantity = 1 }
+                     ]
+            }
+
+        ingredients : Dict String InventoryItem
+        ingredients =
+            model.inventory
+                |> List.map (\x -> ( x.name, x ))
+                |> Dict.fromList
+
+        hasIngredient : Ingredient -> Bool
+        hasIngredient ingredient =
+            ingredients
+                |> Dict.get ingredient.name
+                |> Maybe.map
+                    (\y ->
+                        y.quantity >= 1
+                    )
+                |> Maybe.withDefault False
+        recipe =
+            build.recipe
+                |> Maybe.withDefault []
+
+        hasAll =
+            recipe
+                |> List.map hasIngredient
+                |> List.all identity
+
+        notYet =
+            model.actions
+            |> List.all (\x -> x.name /= build.name)
+
+        newActions =
+            if (hasAll && notYet) then
+                List.append model.actions [ build ]
+            else
+                model.actions
+
+        newInventory =
+            if (hasAll && notYet) then
+                model.inventory
+                    |> List.map (\x -> 
+                            recipe
+                                |> List.filter (\i -> i.name == x.name)
+                                |> List.head
+                                |> Maybe.andThen (\m ->
+                                        Just { x
+                                        | quantity = x.quantity - m.quantity
+                                        }
+                                    )
+                                |> Maybe.withDefault x
+                        )
+            else
+                model.inventory
+    in
+        { model
+        | actions = newActions
+        , inventory = newInventory
+        }

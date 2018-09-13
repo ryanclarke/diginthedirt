@@ -42,6 +42,7 @@ all =
               , icon = "sombrero"
               }
             ]
+      , recipe = Nothing
       }
     , { actionType = Dream
       , name = "Dream"
@@ -51,5 +52,6 @@ all =
       , duration = 5000
       , nullChance = 0
       , items = []
+      , recipe = Nothing
       }
     ]
