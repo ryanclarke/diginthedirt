@@ -18,11 +18,11 @@ update msg model =
             finishedAction model chance
 
 
-startAction : Model -> ActionType -> ( Model, Cmd Msg )
-startAction model actionType =
+startAction : Model -> String -> ( Model, Cmd Msg )
+startAction model actionName =
     let
         initialize action =
-            if action.actionType == actionType then
+            if action.name == actionName then
                 { action | progress = At 100 }
             else
                 action

@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Actions
 import Html
+import Items exposing (all)
 import Model exposing (Model, Msg(Tick))
 import Time exposing (every, millisecond)
 import Update exposing (update)
@@ -26,12 +27,7 @@ init =
             , lastTickDuration = 0
             , lastTimestamp = 0
             , actions = Actions.all
-            , items =
-                [ { name = "brick"
-                  , chance = 5
-                  , icon = "brick-pile"
-                  }
-                ]
+            , items = Items.all
             , output = List.range 0 9 |> List.map (\x -> " ")
             , inventory = []
             , finishedActions = []

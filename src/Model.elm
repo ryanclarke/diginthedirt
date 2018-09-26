@@ -1,19 +1,13 @@
 module Model exposing (..)
 
 import Time exposing (Time)
+import Dict exposing (Dict)
 
 
 type Msg
     = Tick Time
-    | StartAction ActionType
+    | StartAction String
     | Roll Float
-
-
-type ActionType
-    = Noop
-    | Build
-    | Dig
-    | Dream
 
 
 type Progress
@@ -23,14 +17,13 @@ type Progress
 
 
 type alias Action =
-    { actionType : ActionType
-    , name : String
+    { name : String
     , success : String
     , failure : String
     , progress : Progress
     , duration : Float
     , nullChance : Float
-    , items : List Item
+    , items : List String
     , recipe : Maybe (List Ingredient)
     }
 
@@ -61,7 +54,7 @@ type alias Model =
     , lastTickDuration : Float
     , lastTimestamp : Time
     , actions : List Action
-    , items : List Item
+    , items : Dict String Item
     , output : List String
     , inventory : List InventoryItem
     , finishedActions : List Action

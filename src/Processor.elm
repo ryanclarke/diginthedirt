@@ -28,10 +28,15 @@ finishedAction model f =
 
                 Just action ->
                     let
-                        itemChance =
+                        actionItems =
                             action.items
-                                |> List.map
-                                    (\x -> x.chance)
+                                |> List.filterMap
+                                    (\x -> Dict.get x model.items)
+
+
+                        itemChance =
+                            actionItems
+                                |> List.map .chance
                                 |> List.sum
 
                         score =
@@ -39,7 +44,7 @@ finishedAction model f =
                     in
                         Just
                             { action = action
-                            , item = getItemFromChance score action.items
+                            , item = getItemFromChance score actionItems
                             }
 
         newFinishedActions =
@@ -176,18 +181,14 @@ enableActions : Model -> Model
 enableActions model =
     let
         build =
-            { actionType = Build
-            , name = "Build fishing pole"
+            { name = "Build fishing pole"
             , success = "Built a "
             , failure = "Built nothing"
             , progress = Inactive
             , duration = 5000
             , nullChance = 0
             , items =
-                [ { name = "fishing pole"
-                  , chance = 1
-                  , icon = "brick-pile"
-                  }
+                [ "fishing pole"
                 ]
             , recipe =
                 Just [ { name = "string", quantity = 1 }
