@@ -1,11 +1,11 @@
 module Model exposing (..)
 
-import Time exposing (Time)
+import Time exposing (Posix)
 import Dict exposing (Dict)
 
 
 type Msg
-    = Tick Time
+    = Tick Posix
     | StartAction String
     | Roll Float
 
@@ -50,9 +50,9 @@ type alias Ingredient =
 
 
 type alias Model =
-    { tickDuration : Float
-    , lastTickDuration : Float
-    , lastTimestamp : Time
+    { tickDuration : Int
+    , lastTickDuration : Int
+    , lastTimestamp : Int
     , actions : List Action
     , items : Dict String Item
     , output : List String

@@ -104,9 +104,9 @@ addToInventory : List InventoryItem -> Item -> List InventoryItem
 addToInventory inventory item =
     let
         toInventoryItem : Item -> InventoryItem
-        toInventoryItem item =
-            { name = item.name
-            , icon = item.icon
+        toInventoryItem i =
+            { name = i.name
+            , icon = i.icon
             , quantity = 1
             , newness = 10
             }

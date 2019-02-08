@@ -3,11 +3,16 @@
   <head>
     <meta charset="utf-8">
     <title>Dig in the Dirt</title>
+    <script src="elm.js"></script>
   </head>
   <body>
-    <script type="text/javascript" src="elm.js"></script>
-    <script type="text/javascript">
-      var app = Elm.Main.fullscreen();
+    <div id="elm"></div>
+    <!-- The below script only works if your Elm file is called "Main.elm"
+    If you name the file differently, change the code below to "Elm.YourFileName.init" -->
+    <script>
+        var app = Elm.Main.init({
+            node: document.getElementById('elm')
+        });
     </script>
   </body>
 </html>

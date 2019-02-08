@@ -1,5 +1,6 @@
 module Update exposing (update)
 
+import Time exposing (..)
 import GameTick exposing (gameTick)
 import Model exposing (..)
 import Processor exposing (finishedAction)
@@ -9,7 +10,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Tick time ->
-            gameTick model time
+            Time.posixToMillis time |> gameTick model
 
         StartAction actionType ->
             startAction model actionType

@@ -2,10 +2,9 @@ module GameTick exposing (gameTick)
 
 import Model exposing (..)
 import Processor
-import Time exposing (Time)
 
 
-gameTick : Model -> Time -> ( Model, Cmd Msg )
+gameTick : Model -> Int -> ( Model, Cmd Msg )
 gameTick model time =
     let
         sinceLastTick =
@@ -44,10 +43,10 @@ gameTick model time =
         if List.isEmpty finishedActions then
             ( newModel, Cmd.none )
         else
-            (Processor.finishedActions newModel)
+            ( Processor.finishedActions newModel )
 
 
-updateProgress : Float -> Action -> Action
+updateProgress : Int -> Action -> Action
 updateProgress sinceLastTick action =
     case action.progress of
         Inactive ->
@@ -56,7 +55,7 @@ updateProgress sinceLastTick action =
         At n ->
             let
                 pct =
-                    n - (sinceLastTick / action.duration * 100)
+                    n - ( (toFloat sinceLastTick) / action.duration * 100)
             in
                 if pct < 0 then
                     setActionProgress Finished action

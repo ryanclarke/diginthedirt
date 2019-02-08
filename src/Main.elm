@@ -1,17 +1,16 @@
 module Main exposing (main)
 
 import Actions
-import Html
+import Browser
 import Items exposing (all)
-import Model exposing (Model, Msg(Tick))
-import Time exposing (every, millisecond)
+import Model exposing (Model, Msg(..))
+import Time exposing (every)
 import Update exposing (update)
 import View exposing (view)
 
 
-main : Program Never Model Msg
 main =
-    Html.program
+    Browser.element
         { init = init
         , update = update
         , subscriptions = subscriptions
@@ -19,8 +18,8 @@ main =
         }
 
 
-init : ( Model, Cmd msg )
-init =
+init : () -> ( Model, Cmd msg )
+init _ =
     let
         model =
             { tickDuration = 20
@@ -43,5 +42,5 @@ subscriptions model =
             model.tickDuration
     in
         Sub.batch
-            [ every (delay * millisecond) Tick
+            [ every (toFloat delay) Tick
             ]

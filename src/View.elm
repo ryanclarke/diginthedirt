@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Events exposing (on, onClick)
 import Html.Attributes exposing (..)
 import Model exposing (..)
+import String exposing (fromFloat, fromInt)
 
 
 view : Model -> Html Msg
@@ -74,7 +75,7 @@ btn action =
         ( pct, isDisabled ) =
             case action.progress of
                 At n ->
-                    ( n |> toString
+                    ( n |> fromFloat
                     , { cursor = "progress"
                       , action = StartAction ""
                       }
@@ -91,13 +92,11 @@ btn action =
             [ onClick isDisabled.action
             , type_ "button"
             , class "rounded-full p-2 m-2 w-32 border-solid border border-black"
-            , style
-                [ ( "background-color", "transparent" )
-                , ( "background-image", "linear-gradient(lightgray 0, lightgray 100%)" )
-                , ( "background-repeat", "no-repeat" )
-                , ( "background-size", pct ++ "% 100%" )
-                , ( "cursor", isDisabled.cursor )
-                ]
+            , style "background-color" "transparent" 
+            , style "background-image" "linear-gradient(lightgray 0, lightgray 100%)"
+            , style "background-repeat" "no-repeat" 
+            , style "background-size" (pct ++ "% 100%")
+            , style "cursor" isDisabled.cursor 
             ]
             [ text action.name ]
 
@@ -123,7 +122,7 @@ actionLog output =
             |> List.take 10
             |> List.map2 
                 (\c t -> p 
-                    [ style [ ("color", c ) ] ] 
+                    [ style "color" c ] 
                     [ text t ])
                 grad
 
@@ -144,6 +143,6 @@ inventoryItem item =
                 , class "mr-2 w-4"
                 ] []
             , div [ class "align-top inline w-1/2" ] [ text item.name ]
-            , div [ class "align-top float-right inline" ] [ item.quantity |> toString |> text ]
+            , div [ class "align-top float-right inline" ] [ item.quantity |> fromInt |> text ]
             ]
 
