@@ -18,7 +18,7 @@ view model =
                 []
 
         wrapper =
-            (\body -> div [ class "container mx-auto max-w-lg" ] [ css, headerView, body ])
+            (\body -> div [ class "container mx-auto max-w-3xl" ] [ css, headerView, body ])
     in
         wrapper (mainView model)
 
@@ -140,7 +140,7 @@ inventoryItem item =
         div [ class ("w-full" ++ ani) ]
             [ img
                 [ src ( String.concat [ "svg/", item.icon, ".svg" ] )
-                , class "mr-2 w-4"
+                , class "inline mr-2 w-4"
                 ] []
             , div [ class "align-top inline w-1/2" ] [ text item.name ]
             , div [ class "align-top float-right inline" ] [ item.quantity |> fromInt |> text ]
