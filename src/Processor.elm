@@ -179,39 +179,17 @@ getItemFromChance chance items =
 
 enableActions : Model -> Model
 enableActions model =
-    let
-        build =
-            { name = "Build fishing pole"
-            , success = "Built a "
-            , failure = "Built nothing"
-            , progress = Inactive
-            , duration = 5000
-            , nullChance = 0
-            , items =
-                [ "fishing pole"
-                ]
-            , recipe =
-                Just [ { name = "string", quantity = 1 }
-                     , { name = "stick", quantity = 1 }
-                     ]
-            }
-        
-        hasAll =
-            build.recipe
-                |> isPossible model.inventory
-
-        notYet =
+    { model
+        | actions =
             model.actions
-            |> List.all (\x -> x.name /= build.name)
-
-        newActions =
-            if hasAll && notYet then
-                List.append model.actions [ build ]
-            else
-                model.actions
-    in
-        { model
-        | actions = newActions
+            |> List.map (\a ->
+                case a.unlocked of
+                True -> a
+                False ->
+                    case isPossible model.inventory a.recipe of
+                    True -> { a | unlocked = True }
+                    False -> a
+            )
         }
 
 isPossible : List InventoryItem -> Maybe (List Ingredient) -> Bool
@@ -228,11 +206,9 @@ isPossible inventory ingredients =
                         y.quantity >= ingredient.quantity
                     )
                 |> Maybe.withDefault False
-        
-        hasAll =
-                    ingredients
-                    |> Maybe.withDefault []
-                    |> List.map hasIngredient
-                    |> List.all identity
+
     in
-        hasAll
+        ingredients
+        |> Maybe.withDefault []
+        |> List.map hasIngredient
+        |> List.all identity

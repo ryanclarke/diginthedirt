@@ -47,7 +47,7 @@ mainView : Model -> Html Msg
 mainView model =
     div [ class "flex -m-2" ]
         [ panel "Actions" "w-1/4"
-            (div [] (model.actions |> List.map (btn model.inventory)))
+            (div [] (model.actions |> List.filter (\a -> a.unlocked) |> List.map (btn model.inventory)))
         , panel "Action Log" "w-1/2"
             (div [] (actionLog model.output))
         , panel "Backpack" "w-1/4"

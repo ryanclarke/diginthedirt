@@ -4404,6 +4404,11 @@ function _Browser_load(url)
 	}));
 }
 var author$project$Model$Inactive = {$: 'Inactive'};
+var elm$core$Basics$False = {$: 'False'};
+var elm$core$Basics$True = {$: 'True'};
+var elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
 var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$LT = {$: 'LT'};
@@ -4496,9 +4501,27 @@ var author$project$Actions$all = _List_fromArray(
 		nullChance: 25,
 		progress: author$project$Model$Inactive,
 		recipe: elm$core$Maybe$Nothing,
-		success: 'Digging found a '
+		success: 'Digging found a ',
+		unlocked: true
 	},
-		{duration: 5000, failure: 'Dreamed nothing', items: _List_Nil, name: 'Dream', nullChance: 0, progress: author$project$Model$Inactive, recipe: elm$core$Maybe$Nothing, success: 'Deamed of '}
+		{duration: 5000, failure: 'Dreamed nothing', items: _List_Nil, name: 'Dream', nullChance: 0, progress: author$project$Model$Inactive, recipe: elm$core$Maybe$Nothing, success: 'Deamed of ', unlocked: true},
+		{
+		duration: 5000,
+		failure: 'Built nothing',
+		items: _List_fromArray(
+			['fishing pole']),
+		name: 'Build fishing pole',
+		nullChance: 0,
+		progress: author$project$Model$Inactive,
+		recipe: elm$core$Maybe$Just(
+			_List_fromArray(
+				[
+					{name: 'string', quantity: 1},
+					{name: 'stick', quantity: 1}
+				])),
+		success: 'Built a ',
+		unlocked: false
+	}
 	]);
 var elm$core$Basics$apR = F2(
 	function (x, f) {
@@ -4760,8 +4783,6 @@ var elm$core$List$range = F2(
 	function (lo, hi) {
 		return A3(elm$core$List$rangeHelp, lo, hi, _List_Nil);
 	});
-var elm$core$Basics$False = {$: 'False'};
-var elm$core$Basics$True = {$: 'True'};
 var elm$core$Result$isOk = function (result) {
 	if (result.$ === 'Ok') {
 		return true;
@@ -4910,9 +4931,6 @@ var elm$core$Array$initialize = F2(
 			return A5(elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
-var elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
-};
 var elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
@@ -5812,48 +5830,37 @@ var author$project$Processor$isPossible = F2(
 								},
 								inventory)))));
 		};
-		var hasAll = A2(
+		return A2(
 			elm$core$List$all,
 			elm$core$Basics$identity,
 			A2(
 				elm$core$List$map,
 				hasIngredient,
 				A2(elm$core$Maybe$withDefault, _List_Nil, ingredients)));
-		return hasAll;
 	});
-var elm$core$Basics$neq = _Utils_notEqual;
 var author$project$Processor$enableActions = function (model) {
-	var build = {
-		duration: 5000,
-		failure: 'Built nothing',
-		items: _List_fromArray(
-			['fishing pole']),
-		name: 'Build fishing pole',
-		nullChance: 0,
-		progress: author$project$Model$Inactive,
-		recipe: elm$core$Maybe$Just(
-			_List_fromArray(
-				[
-					{name: 'string', quantity: 1},
-					{name: 'stick', quantity: 1}
-				])),
-		success: 'Built a '
-	};
-	var hasAll = A2(author$project$Processor$isPossible, model.inventory, build.recipe);
-	var notYet = A2(
-		elm$core$List$all,
-		function (x) {
-			return !_Utils_eq(x.name, build.name);
-		},
-		model.actions);
-	var newActions = (hasAll && notYet) ? A2(
-		elm$core$List$append,
-		model.actions,
-		_List_fromArray(
-			[build])) : model.actions;
 	return _Utils_update(
 		model,
-		{actions: newActions});
+		{
+			actions: A2(
+				elm$core$List$map,
+				function (a) {
+					var _n0 = a.unlocked;
+					if (_n0) {
+						return a;
+					} else {
+						var _n1 = A2(author$project$Processor$isPossible, model.inventory, a.recipe);
+						if (_n1) {
+							return _Utils_update(
+								a,
+								{unlocked: true});
+						} else {
+							return a;
+						}
+					}
+				},
+				model.actions)
+		});
 };
 var author$project$Processor$tryItemForSuccess = F2(
 	function (item, acc) {
@@ -6502,7 +6509,12 @@ var author$project$View$mainView = function (model) {
 					A2(
 						elm$core$List$map,
 						author$project$View$btn(model.inventory),
-						model.actions))),
+						A2(
+							elm$core$List$filter,
+							function (a) {
+								return a.unlocked;
+							},
+							model.actions)))),
 				A3(
 				author$project$View$panel,
 				'Action Log',
