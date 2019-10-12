@@ -1,4 +1,4 @@
-module Processor exposing (finishedAction, finishedActions)
+module Processor exposing (finishedAction, finishedActions, isPossible)
 
 import Model exposing (..)
 import Random
@@ -195,59 +195,44 @@ enableActions model =
                      , { name = "stick", quantity = 1 }
                      ]
             }
-
-        ingredients : Dict String InventoryItem
-        ingredients =
-            model.inventory
-                |> List.map (\x -> ( x.name, x ))
-                |> Dict.fromList
-
-        hasIngredient : Ingredient -> Bool
-        hasIngredient ingredient =
-            ingredients
-                |> Dict.get ingredient.name
-                |> Maybe.map
-                    (\y ->
-                        y.quantity >= 1
-                    )
-                |> Maybe.withDefault False
-        recipe =
-            build.recipe
-                |> Maybe.withDefault []
-
+        
         hasAll =
-            recipe
-                |> List.map hasIngredient
-                |> List.all identity
+            build.recipe
+                |> isPossible model.inventory
 
         notYet =
             model.actions
             |> List.all (\x -> x.name /= build.name)
 
         newActions =
-            if (hasAll && notYet) then
+            if hasAll && notYet then
                 List.append model.actions [ build ]
             else
                 model.actions
-
-        newInventory =
-            if (hasAll && notYet) then
-                model.inventory
-                    |> List.map (\x -> 
-                            recipe
-                                |> List.filter (\i -> i.name == x.name)
-                                |> List.head
-                                |> Maybe.andThen (\m ->
-                                        Just { x
-                                        | quantity = x.quantity - m.quantity
-                                        }
-                                    )
-                                |> Maybe.withDefault x
-                        )
-            else
-                model.inventory
     in
         { model
         | actions = newActions
-        , inventory = newInventory
         }
+
+isPossible : List InventoryItem -> Maybe (List Ingredient) -> Bool
+isPossible inventory ingredients =
+    let
+        hasIngredient : Ingredient -> Bool
+        hasIngredient ingredient =
+            inventory
+                |> List.map (\x -> ( x.name, x ))
+                |> Dict.fromList
+                |> Dict.get ingredient.name
+                |> Maybe.map
+                    (\y ->
+                        y.quantity >= ingredient.quantity
+                    )
+                |> Maybe.withDefault False
+        
+        hasAll =
+                    ingredients
+                    |> Maybe.withDefault []
+                    |> List.map hasIngredient
+                    |> List.all identity
+    in
+        hasAll
