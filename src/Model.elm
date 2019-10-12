@@ -25,6 +25,7 @@ type alias Action =
     , nullChance : Float
     , items : List String
     , recipe : Maybe (List Ingredient)
+    , unlocked : Bool
     }
 
 
