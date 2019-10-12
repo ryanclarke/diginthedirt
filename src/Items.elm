@@ -1,7 +1,7 @@
 module Items exposing (all)
 
-import Model exposing (..)
 import Dict exposing (..)
+import Model exposing (..)
 
 
 all : Dict String Item

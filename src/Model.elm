@@ -1,7 +1,7 @@
 module Model exposing (..)
 
-import Time exposing (Posix)
 import Dict exposing (Dict)
+import Time exposing (Posix)
 
 
 type Msg

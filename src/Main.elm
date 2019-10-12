@@ -27,12 +27,12 @@ init _ =
             , lastTimestamp = 0
             , actions = Actions.all
             , items = Items.all
-            , output = List.range 0 9 |> List.map (\_ -> " ")
+            , output = List.range 0 9 |> List.map (\_ -> "\u{2003}")
             , inventory = []
             , finishedActions = []
             }
     in
-        ( model, Cmd.none )
+    ( model, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -41,6 +41,6 @@ subscriptions model =
         delay =
             model.tickDuration
     in
-        Sub.batch
-            [ every (toFloat delay) Tick
-            ]
+    Sub.batch
+        [ every (toFloat delay) Tick
+        ]

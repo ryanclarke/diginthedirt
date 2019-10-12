@@ -40,10 +40,11 @@ gameTick model time =
                 , inventory = agedInventory
             }
     in
-        if List.isEmpty finishedActions then
-            ( newModel, Cmd.none )
-        else
-            ( Processor.finishedActions newModel )
+    if List.isEmpty finishedActions then
+        ( newModel, Cmd.none )
+
+    else
+        Processor.finishedActions newModel
 
 
 updateProgress : Int -> Action -> Action
@@ -55,12 +56,13 @@ updateProgress sinceLastTick action =
         At n ->
             let
                 pct =
-                    n - ( (toFloat sinceLastTick) / action.duration * 100)
+                    n - (toFloat sinceLastTick / action.duration * 100)
             in
-                if pct < 0 then
-                    setActionProgress Finished action
-                else
-                    setActionProgress (At pct) action
+            if pct < 0 then
+                setActionProgress Finished action
+
+            else
+                setActionProgress (At pct) action
 
         Finished ->
             setActionProgress Inactive action
@@ -70,6 +72,7 @@ inactivatedFinished : Action -> Action
 inactivatedFinished action =
     if action |> isFinished then
         setActionProgress Inactive action
+
     else
         action
 

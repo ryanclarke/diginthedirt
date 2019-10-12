@@ -12,14 +12,14 @@ all =
       , duration = 2000
       , nullChance = 25
       , items =
-          [ "brick"
-          , "stick"
-          , "rock"
-          , "string"
-          , "pirate hat"
-          , "cowboy hat"
-          , "sombrero"
-          ]
+            [ "brick"
+            , "stick"
+            , "rock"
+            , "string"
+            , "pirate hat"
+            , "cowboy hat"
+            , "sombrero"
+            ]
       , recipe = Nothing
       , unlocked = True
       }
@@ -40,12 +40,13 @@ all =
       , duration = 5000
       , nullChance = 0
       , items =
-          [ "fishing pole"
-          ]
+            [ "fishing pole"
+            ]
       , recipe =
-          Just [ { name = "string", quantity = 1 }
-               , { name = "stick", quantity = 1 }
-               ]
+            Just
+                [ { name = "string", quantity = 1 }
+                , { name = "stick", quantity = 1 }
+                ]
       , unlocked = False
       }
     ]

@@ -1,8 +1,8 @@
 module Processor exposing (finishedAction, finishedActions, isPossible)
 
+import Dict exposing (..)
 import Model exposing (..)
 import Random
-import Dict exposing (..)
 
 
 type alias Acc =
@@ -33,7 +33,6 @@ finishedAction model f =
                                 |> List.filterMap
                                     (\x -> Dict.get x model.items)
 
-
                         itemChance =
                             actionItems
                                 |> List.map .chance
@@ -42,10 +41,10 @@ finishedAction model f =
                         score =
                             (action.nullChance + itemChance) * f
                     in
-                        Just
-                            { action = action
-                            , item = getItemFromChance score actionItems
-                            }
+                    Just
+                        { action = action
+                        , item = getItemFromChance score actionItems
+                        }
 
         newFinishedActions =
             Maybe.withDefault [] (List.tail model.finishedActions)
@@ -76,28 +75,30 @@ finishedAction model f =
                         Just item ->
                             addToInventory model.inventory item
 
-        newModel = 
+        newModel =
             { model
-            | inventory = newInventory
-            , finishedActions = newFinishedActions
-            , output = newOutput
+                | inventory = newInventory
+                , finishedActions = newFinishedActions
+                , output = newOutput
             }
 
         newNewModel =
-            if (List.isEmpty newFinishedActions) then
+            if List.isEmpty newFinishedActions then
                 enableActions newModel
+
             else
                 newModel
 
         message =
-            if (List.isEmpty newFinishedActions) then
+            if List.isEmpty newFinishedActions then
                 Cmd.none
+
             else
                 Random.generate Roll (Random.float 0 1)
     in
-        ( newNewModel
-        , message
-        )
+    ( newNewModel
+    , message
+    )
 
 
 addToInventory : List InventoryItem -> Item -> List InventoryItem
@@ -117,21 +118,21 @@ addToInventory inventory item =
                     (\i -> i.name == item.name)
                 |> List.head
     in
-        case il of
-            Nothing ->
-                ((toInventoryItem item) :: inventory)
-                    |> List.sortBy .name
+    case il of
+        Nothing ->
+            (toInventoryItem item :: inventory)
+                |> List.sortBy .name
 
-            Just inventoryItem ->
-                inventory
-                    |> updateIf
-                        (\i -> i.name == item.name)
-                        (\i ->
-                            { i
-                                | quantity = i.quantity + 1
-                                , newness = 10
-                            }
-                        )
+        Just inventoryItem ->
+            inventory
+                |> updateIf
+                    (\i -> i.name == item.name)
+                    (\i ->
+                        { i
+                            | quantity = i.quantity + 1
+                            , newness = 10
+                        }
+                    )
 
 
 updateIf : (InventoryItem -> Bool) -> (InventoryItem -> InventoryItem) -> List InventoryItem -> List InventoryItem
@@ -140,6 +141,7 @@ updateIf predicate update list =
         (\item ->
             if predicate item then
                 update item
+
             else
                 item
         )
@@ -155,12 +157,13 @@ tryItemForSuccess item acc =
         newItem =
             if newChance <= 0 then
                 Just (Maybe.withDefault item acc.item)
+
             else
                 Nothing
     in
-        { chance = newChance
-        , item = newItem
-        }
+    { chance = newChance
+    , item = newItem
+    }
 
 
 getItemFromChance : Float -> List Item -> Maybe Item
@@ -172,25 +175,34 @@ getItemFromChance chance items =
         result =
             List.foldl tryItemForSuccess seed items
     in
-        if result.chance <= 0 then
-            result.item
-        else
-            Nothing
+    if result.chance <= 0 then
+        result.item
+
+    else
+        Nothing
+
 
 enableActions : Model -> Model
 enableActions model =
     { model
         | actions =
             model.actions
-            |> List.map (\a ->
-                case a.unlocked of
-                True -> a
-                False ->
-                    case isPossible model.inventory a.recipe of
-                    True -> { a | unlocked = True }
-                    False -> a
-            )
-        }
+                |> List.map
+                    (\a ->
+                        case a.unlocked of
+                            True ->
+                                a
+
+                            False ->
+                                case isPossible model.inventory a.recipe of
+                                    True ->
+                                        { a | unlocked = True }
+
+                                    False ->
+                                        a
+                    )
+    }
+
 
 isPossible : List InventoryItem -> Maybe (List Ingredient) -> Bool
 isPossible inventory ingredients =
@@ -206,9 +218,8 @@ isPossible inventory ingredients =
                         y.quantity >= ingredient.quantity
                     )
                 |> Maybe.withDefault False
-
     in
-        ingredients
+    ingredients
         |> Maybe.withDefault []
         |> List.map hasIngredient
         |> List.all identity
