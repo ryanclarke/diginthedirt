@@ -189,17 +189,11 @@ enableActions model =
             model.actions
                 |> List.map
                     (\a ->
-                        case a.unlocked of
-                            True ->
-                                a
+                        if not a.unlocked && isPossible model.inventory a.recipe then
+                            { a | unlocked = True }
 
-                            False ->
-                                case isPossible model.inventory a.recipe of
-                                    True ->
-                                        { a | unlocked = True }
-
-                                    False ->
-                                        a
+                        else
+                            a
                     )
     }
 

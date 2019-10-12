@@ -5845,19 +5845,9 @@ var author$project$Processor$enableActions = function (model) {
 			actions: A2(
 				elm$core$List$map,
 				function (a) {
-					var _n0 = a.unlocked;
-					if (_n0) {
-						return a;
-					} else {
-						var _n1 = A2(author$project$Processor$isPossible, model.inventory, a.recipe);
-						if (_n1) {
-							return _Utils_update(
-								a,
-								{unlocked: true});
-						} else {
-							return a;
-						}
-					}
+					return ((!a.unlocked) && A2(author$project$Processor$isPossible, model.inventory, a.recipe)) ? _Utils_update(
+						a,
+						{unlocked: true}) : a;
 				},
 				model.actions)
 		});
