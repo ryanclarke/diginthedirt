@@ -27,7 +27,7 @@ init _ =
             , lastTimestamp = 0
             , actions = Actions.all
             , items = Items.all
-            , output = List.range 0 9 |> List.map (\x -> " ")
+            , output = List.range 0 9 |> List.map (\_ -> " ")
             , inventory = []
             , finishedActions = []
             }

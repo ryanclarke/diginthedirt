@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Events exposing (on, onClick)
 import Html.Attributes exposing (..)
 import Model exposing (..)
+import Processor exposing (isPossible)
 import String exposing (fromFloat, fromInt)
 
 
@@ -46,7 +47,7 @@ mainView : Model -> Html Msg
 mainView model =
     div [ class "flex -m-2" ]
         [ panel "Actions" "w-1/4"
-            (div [] (List.map btn model.actions))
+            (div [] (model.actions |> List.map (btn model.inventory)))
         , panel "Action Log" "w-1/2"
             (div [] (actionLog model.output))
         , panel "Backpack" "w-1/4"
@@ -69,16 +70,17 @@ panel title width html =
         ] 
 
 
-btn : Action -> Html Msg
-btn action =
+btn : List InventoryItem -> Action -> Html Msg
+btn inventory action =
     let
-        ( pct, isDisabled ) =
+        ( pct, isProgressing, color ) =
             case action.progress of
                 At n ->
                     ( n |> fromFloat
                     , { cursor = "progress"
                       , action = StartAction ""
                       }
+                    , "border-black text-black"
                     )
 
                 _ ->
@@ -86,17 +88,21 @@ btn action =
                     , { cursor = "default"
                       , action = StartAction action.name
                       }
+                    ,   if isPossible inventory action.recipe then
+                            "border-black text-black"
+                        else
+                            "border-gray-400 text-gray-400"
                     )
     in
         button
-            [ onClick isDisabled.action
+            [ onClick isProgressing.action
             , type_ "button"
-            , class "rounded-full p-2 m-2 w-32 border-solid border border-black"
-            , style "background-color" "transparent" 
+            , class ("rounded-full p-2 m-2 w-32 border-solid border " ++ color)
+            , style "background-color" "transparent"
             , style "background-image" "linear-gradient(lightgray 0, lightgray 100%)"
             , style "background-repeat" "no-repeat" 
             , style "background-size" (pct ++ "% 100%")
-            , style "cursor" isDisabled.cursor 
+            , style "cursor" isProgressing.cursor
             ]
             [ text action.name ]
 
