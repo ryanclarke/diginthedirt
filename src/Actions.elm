@@ -14,6 +14,7 @@ all =
       , items =
             [ "brick"
             , "stick"
+            , "paperclip"
             , "rock"
             , "string"
             , "pirate hat"
@@ -44,8 +45,9 @@ all =
             ]
       , recipe =
             Just
-                [ { name = "string", quantity = 1 }
+                [ { name = "paperclip", quantity = 1 }
                 , { name = "stick", quantity = 1 }
+                , { name = "string", quantity = 1 }
                 ]
       , unlocked = False
       }

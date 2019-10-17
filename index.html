@@ -4496,7 +4496,7 @@ var author$project$Actions$all = _List_fromArray(
 		duration: 2000,
 		failure: 'Digging found nothing',
 		items: _List_fromArray(
-			['brick', 'stick', 'rock', 'string', 'pirate hat', 'cowboy hat', 'sombrero']),
+			['brick', 'stick', 'paperclip', 'rock', 'string', 'pirate hat', 'cowboy hat', 'sombrero']),
 		name: 'Dig',
 		nullChance: 25,
 		progress: author$project$Model$Inactive,
@@ -4516,8 +4516,9 @@ var author$project$Actions$all = _List_fromArray(
 		recipe: elm$core$Maybe$Just(
 			_List_fromArray(
 				[
-					{name: 'string', quantity: 1},
-					{name: 'stick', quantity: 1}
+					{name: 'paperclip', quantity: 1},
+					{name: 'stick', quantity: 1},
+					{name: 'string', quantity: 1}
 				])),
 		success: 'Built a ',
 		unlocked: false
@@ -4751,14 +4752,15 @@ var author$project$Items$all = elm$core$Dict$fromList(
 		},
 		_List_fromArray(
 			[
-				{chance: 10, icon: 'brick-pile', name: 'brick'},
-				{chance: 25, icon: 'tree-branch', name: 'stick'},
-				{chance: 25, icon: 'stone-pile', name: 'rock'},
+				{chance: 10, icon: 'stone-block', name: 'brick'},
+				{chance: 25, icon: 'wood-stick', name: 'stick'},
+				{chance: 25, icon: 'rock', name: 'rock'},
 				{chance: 10, icon: 'whiplash', name: 'string'},
+				{chance: 10, icon: 'paper-clip', name: 'paperclip'},
 				{chance: 1, icon: 'pirate-hat', name: 'pirate hat'},
 				{chance: 1, icon: 'western-hat', name: 'cowboy hat'},
 				{chance: 1, icon: 'sombrero', name: 'sombrero'},
-				{chance: 1, icon: 'brick-pile', name: 'fishing pole'}
+				{chance: 1, icon: 'fishing-pole', name: 'fishing pole'}
 			])));
 var elm$core$Basics$le = _Utils_le;
 var elm$core$Basics$sub = _Basics_sub;
@@ -6395,12 +6397,12 @@ var elm$html$Html$Attributes$src = function (url) {
 		_VirtualDom_noJavaScriptOrHtmlUri(url));
 };
 var author$project$View$inventoryItem = function (item) {
-	var ani = (item.newness > 0) ? ' bg-green-lighter' : '';
+	var ani = (item.newness > 0) ? 'bg-green-200' : '';
 	return A2(
 		elm$html$Html$div,
 		_List_fromArray(
 			[
-				elm$html$Html$Attributes$class('w-full' + ani)
+				elm$html$Html$Attributes$class('w-full ' + ani)
 			]),
 		_List_fromArray(
 			[

@@ -8,19 +8,23 @@ all : Dict String Item
 all =
     [ { name = "brick"
       , chance = 10
-      , icon = "brick-pile"
+      , icon = "stone-block"
       }
     , { name = "stick"
       , chance = 25
-      , icon = "tree-branch"
+      , icon = "wood-stick"
       }
     , { name = "rock"
       , chance = 25
-      , icon = "stone-pile"
+      , icon = "rock"
       }
     , { name = "string"
       , chance = 10
       , icon = "whiplash"
+      }
+    , { name = "paperclip"
+      , chance = 10
+      , icon = "paper-clip"
       }
     , { name = "pirate hat"
       , chance = 1
@@ -36,7 +40,7 @@ all =
       }
     , { name = "fishing pole"
       , chance = 1
-      , icon = "brick-pile"
+      , icon = "fishing-pole"
       }
     ]
         |> List.map (\x -> ( x.name, x ))

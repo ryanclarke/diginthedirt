@@ -143,12 +143,12 @@ inventoryItem item =
     let
         ani =
             if item.newness > 0 then
-                " bg-green-lighter"
+                "bg-green-200"
 
             else
                 ""
     in
-    div [ class ("w-full" ++ ani) ]
+    div [ class ("w-full " ++ ani) ]
         [ img
             [ src (String.concat [ "svg/", item.icon, ".svg" ])
             , class "inline mr-2 w-4"
