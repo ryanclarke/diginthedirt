@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Dig in the Dirt</title>
+    <script src="elm.min.js"></script>
+  </head>
+  <body>
+    <div id="elm"></div>
+    <script>
+        if (typeof Elm === 'undefined') {
+          const codeStyle = "background:lightgray; padding:0 3px;";
+          const info = `<p>In a bash terminal run <code style="${codeStyle}">. optimize</code> and then load this file again.</p>`;
+          document.getElementById('elm').innerHTML = info;
+        } else {
+          Elm.Main.init({
+            node: document.getElementById('elm')
+          });
+        }
+    </script>
+  </body>
+</html>

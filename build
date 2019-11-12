@@ -1,0 +1,4 @@
+#!/bin/sh
+
+elm-format --yes src/
+elm make src/Main.elm
