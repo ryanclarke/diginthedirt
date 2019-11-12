@@ -1,6 +1,6 @@
 module Processor exposing (finishedAction, finishedActions, isPossible)
 
-import Dict exposing (..)
+import Dict
 import Model exposing (..)
 import Random
 
@@ -22,29 +22,28 @@ finishedAction : Model -> Float -> ( Model, Cmd Msg )
 finishedAction model f =
     let
         newInventoryItem =
-            case List.head model.finishedActions of
-                Nothing ->
-                    Nothing
+            model.finishedActions
+                |> List.head
+                |> Maybe.map
+                    (\action ->
+                        let
+                            actionItems =
+                                action.items
+                                    |> List.filterMap
+                                        (\x -> Dict.get x model.items)
 
-                Just action ->
-                    let
-                        actionItems =
-                            action.items
-                                |> List.filterMap
-                                    (\x -> Dict.get x model.items)
+                            itemChance =
+                                actionItems
+                                    |> List.map .chance
+                                    |> List.sum
 
-                        itemChance =
-                            actionItems
-                                |> List.map .chance
-                                |> List.sum
-
-                        score =
-                            (action.nullChance + itemChance) * f
-                    in
-                    Just
+                            score =
+                                (action.nullChance + itemChance) * f
+                        in
                         { action = action
                         , item = getItemFromChance score actionItems
                         }
+                    )
 
         newFinishedActions =
             Maybe.withDefault [] (List.tail model.finishedActions)
@@ -123,7 +122,7 @@ addToInventory inventory item =
             (toInventoryItem item :: inventory)
                 |> List.sortBy .name
 
-        Just inventoryItem ->
+        Just _ ->
             inventory
                 |> updateIf
                     (\i -> i.name == item.name)

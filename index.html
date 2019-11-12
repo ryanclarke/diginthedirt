@@ -5747,7 +5747,6 @@ var author$project$Processor$addToInventory = F2(
 					toInventoryItem(item),
 					inventory));
 		} else {
-			var inventoryItem = il.a;
 			return A3(
 				author$project$Processor$updateIf,
 				function (i) {
@@ -5899,12 +5898,9 @@ var elm$core$List$tail = function (list) {
 };
 var author$project$Processor$finishedAction = F2(
 	function (model, f) {
-		var newInventoryItem = function () {
-			var _n4 = elm$core$List$head(model.finishedActions);
-			if (_n4.$ === 'Nothing') {
-				return elm$core$Maybe$Nothing;
-			} else {
-				var action = _n4.a;
+		var newInventoryItem = A2(
+			elm$core$Maybe$map,
+			function (action) {
 				var actionItems = A2(
 					elm$core$List$filterMap,
 					function (x) {
@@ -5919,13 +5915,12 @@ var author$project$Processor$finishedAction = F2(
 						},
 						actionItems));
 				var score = (action.nullChance + itemChance) * f;
-				return elm$core$Maybe$Just(
-					{
-						action: action,
-						item: A2(author$project$Processor$getItemFromChance, score, actionItems)
-					});
-			}
-		}();
+				return {
+					action: action,
+					item: A2(author$project$Processor$getItemFromChance, score, actionItems)
+				};
+			},
+			elm$core$List$head(model.finishedActions));
 		var newOutput = function () {
 			if (newInventoryItem.$ === 'Nothing') {
 				return model.output;

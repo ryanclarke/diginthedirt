@@ -1,6 +1,6 @@
 module Items exposing (all)
 
-import Dict exposing (..)
+import Dict exposing (Dict)
 import Model exposing (..)
 
 

@@ -2,7 +2,7 @@ module View exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onClick)
+import Html.Events exposing (onClick)
 import Model exposing (..)
 import Processor exposing (isPossible)
 import String exposing (fromFloat, fromInt)
